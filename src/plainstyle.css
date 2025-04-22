@@ -104,6 +104,7 @@ body {
   /* Wrapper per le card con scrolling orizzontale */
   .cards-wrapper {
     margin-top: 1rem;
+    margin-left: 65px;
     max-width: 100%;
     overflow-x: auto;
     padding: 1rem;
@@ -239,26 +240,27 @@ h1 {
 
 .button {
     border: 1px solid whitesmoke;
-    display: inline;
     position: absolute;
     top: 15%;
     right: 1%;
-
-    a {
-        background-color: var(--secondary-color);
-        text-decoration: none;
-        color: black;
-        padding: 10px 20px;
-        border-radius: 5px;
-        font-weight: bold;
-        margin: 10px;
-    }
-
-    a:hover {
-        color: var(--accent-color);
-        box-shadow: 0px 0px 20px 2px var(--accent-color);
-    }
-}
+  }
+  
+  /* 2) Stile del link dentro .button */
+  .button a {
+    display: inline-block;               /* essenziale per formare il “pulsante” */
+    background-color: var(--secondary-color);
+    text-decoration: none;
+    color: black;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-weight: bold;
+    margin: 10px;
+  }
+  
+  .button a:hover {
+    color: var(--accent-color);
+    box-shadow: 0 0 20px 2px var(--accent-color);
+  }
 
 /* .container {
     display: flex;
@@ -345,7 +347,7 @@ nav{
     position: fixed;
     left: 0;
     top: 17%;
-    width: 50px;
+    width: 65px;
     height: 100%;
     background-color: var(--secondary-color);
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
@@ -358,7 +360,13 @@ nav{
     z-index: 8;
 }
 
-.bnt-nav > a > i{
+.btn-nav{
+    z-index: 10;
+    background-color: transparent;
+    border: transparent;
+}
+
+.btn-nav > a > i{
     background-color: transparent !important;
     color: var(--primary-dark);
 }
@@ -367,5 +375,203 @@ nav{
     display: flex;
     flex-direction: column; 
     align-items: center; 
-    gap: 40px;
+    gap: 80px;
 }
+
+.focus {
+    width: 50px;
+    height: 50px;
+    display: inline-flex;               
+    align-items: center;
+    justify-content: center;
+    border: 4px solid var(--primary-dark);
+    border-radius: 50%;                 
+    padding: 0;                         
+    margin: 0;    
+    z-index: 8;                      
+}
+
+/* Overlay per la card ingrandita */
+.card-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.6); /* Sfondo semi-trasparente */
+    backdrop-filter: blur(8px); /* Sfocatura dello sfondo */
+    display: none; /* Modal nascosto di default */
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+  
+  /* Card ingrandita nel modal */
+  .card-enlarged {
+    width: 70vw; /* Larghezza della card ingrandita */
+    max-width: 900px;
+    min-width: 400px; /* Evita che la card diventi troppo piccola */
+    background-color: var(--primary-light) !important;
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease-in-out;
+    z-index: 1001;
+  }
+  
+  .card-enlarged:hover {
+    transform: none; /* Evita che la card si restringa quando ci si passa sopra */
+  }
+  
+  /* Pulsante di chiusura (X) per il modal */
+  .card-modal-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: transparent;
+    border: none;
+    font-size: 2rem;
+    color: #fff;
+    cursor: pointer;
+    z-index: 1002;
+  }
+  
+  /* Sezione commenti */
+  .sezione-commenti {
+    background: #fff;
+    border-radius: 10px;
+    padding: 1rem;
+    margin: 1rem 0;
+    max-width: 90vw;
+  }
+  
+  .sezione-commenti h3 {
+    margin-bottom: 0.5rem;
+    font-size: 1.5rem;
+    color: var(--primary-color);
+  }
+  
+  .commento {
+    margin-bottom: 1rem;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 0.5rem;
+  }
+  
+  .commento .user {
+    font-weight: bold;
+  }
+  
+  .commento .voto {
+    font-size: 1.2rem;
+    color: var(--accent-color);
+  }
+  
+  .no-commenti {
+    font-style: italic;
+    color: #888;
+  }
+  
+  /* Pulsante Prenota evento */
+  .book-event-btn {
+    display: block;
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: 5px;
+    background-color: var(--accent-color);
+    color: #fff;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    margin-top: 1rem;
+    text-align: center;
+    width: 100%;
+  }
+  
+  .book-event-btn:hover {
+    opacity: 0.8;
+  }
+  
+  /* Stili per le card originali visibili */
+  .card {
+    background: #e0e0e0;
+    border-radius: 20px;
+    padding: 1.5rem;
+    width: 360px;
+    max-width: 90vw;
+    font-family: 'Segoe UI', sans-serif;
+    color: #333;
+    cursor: pointer;
+    position: relative;
+    transition: transform 0.3s ease-in-out;
+  }
+  
+  /* .card:hover {
+    transform: scale(1.05); //Leggera animazione al passaggio del mouse
+  } */
+  
+  .card-title {
+    font-size: 1.6rem;
+    color: #bf2a57;
+    font-weight: 700;
+    margin-bottom: 1rem;
+  }
+  
+  .img-contenitore {
+    width: 100%;
+    height: 200px;
+    overflow: hidden;
+    position: relative;
+    margin-bottom: 1rem;
+  }
+  
+  .card-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 10px;
+  }
+  
+  .card-info {
+    font-size: 1rem;
+    color: #333;
+  }
+  
+  .riga {
+    margin-bottom: 0.5rem;
+  }
+  
+  .riga i {
+    margin-right: 5px;
+  }
+  
+  .riga-categoria {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    font-size: 1rem;
+    font-weight: bold;
+    color: var(--accent-color);
+  }
+  
+  section.commenti {
+    background-color: #fff;
+}
+  
+  .card-modal-overlay .card {
+    background-color: transparent;
+    box-shadow: none;
+    padding: 0;
+  }
+  
+  .card-modal-overlay .card h2 {
+    color: var(--accent-color);
+    font-size: 2rem;
+    font-weight: 800;
+  }
+  
+  .card-modal-overlay .card p {
+    font-size: 1.2rem;
+    color: var(--primary-dark);
+  }
+  
+  
