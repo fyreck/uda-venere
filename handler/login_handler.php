@@ -28,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             if (password_verify($password, $user['PASSWORD'])) {
                 $_SESSION['user'] = $mail_user;
-                header("Location: ../dashboard.html");
+                header("Location: ../dashboard.php");
                 exit();
             } else {
                 $_SESSION['error'] = "Password errata";
