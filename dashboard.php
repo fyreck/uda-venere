@@ -1,7 +1,6 @@
 <?php
-    session_start();
-
     require "./handler/conn.php";   
+    require "./handler/auth.php";
 
     if($conn->connect_errno){
         $_SESSION['error_page']='conn';
@@ -10,40 +9,6 @@
 
         header("Location: error_page.php");
         exit;
-    }
-    
-    $loggato = false;
-    $mod = false;
-
-    if(isset($_SESSION['user'])){
-        $auth = $_SESSION['user'];
-        $user = $auth;
-
-        if (filter_var($auth, FILTER_VALIDATE_EMAIL)) {
-            $query = "SELECT NomeUtente FROM UTENTE WHERE Email = ?";
-            $stmt = $conn->prepare($query);
-            $stmt->bind_param("s", $auth);
-            $stmt->execute();
-            $stmt->store_result();
-            $stmt->bind_result($user);
-            $stmt->fetch();
-        }
-
-        $loggato = true;
-
-        $query = "SELECT TipoUtente FROM UTENTE WHERE NomeUtente = ?";
-        $stmt = $conn->prepare($query);
-        $stmt->bind_param("s", $user);
-        $stmt->execute();
-        $stmt->store_result();
-        $stmt->bind_result($tipo);
-        $stmt->fetch();
-
-        if($tipo === 'MOD'){
-            $mod = true;
-        }else{
-            $mod = false;
-        }
     }
 ?>
 
@@ -107,7 +72,7 @@
         </nav>
 
 
-        <div class="cards-wrapper">
+        <div class="cards-wrapper" style="margin-left: <?= $loggato ? '64px' : '0px' ?>">
             <div class="cards">
                 <?php
                     $sql = "SELECT E.IDEvento, E.Titolo, E.DataEvento, E.OraEvento, E.Luogo, C.Nome as 'NomeCategoria', E.Descrizione, E.Immagine, A.Nome, A.Cognome 
@@ -115,8 +80,15 @@
                             JOIN PARTECIPAZIONE as P ON E.IDEvento = P.Evento
                             JOIN ARTISTA as A ON A.IDArtista = P.Artista
                             JOIN CATEGORIAINTERESSE as C ON E.Categoria = C.IDCategoria
+                            WHERE E.DataEvento > ?
                             ORDER BY E.IDEvento";
-                    $result = $conn->query($sql);
+
+                    $oggi = date('Y-m-d');
+
+                    $stmt = $conn->prepare($sql);
+                    $stmt->bind_param("s", $oggi);
+                    $stmt->execute();
+                    $result = $stmt->get_result();
 
                     if ($result->num_rows > 0) {
                         while ($row = $result->fetch_assoc()):
@@ -192,7 +164,7 @@
                                     <div class="riga">
                                         <i class="fa-solid fa-align-left fa-lg"></i><span><?= $row['Descrizione'] ?></span><br>
                                     </div>
-                                    <section class="commenti" style="display: block;">
+                                    <section class="commenti" style="display: <?= $loggato ? 'block' : 'none' ?> ">
                                         <?php
                                             $sql_com = "SELECT Utente, Voto, Descrizione FROM COMMENTO WHERE Evento = ?";
                                             $stmt_com = $conn->prepare($sql_com);
@@ -214,7 +186,13 @@
                                         ?>
                                     </section>
                                 </div>
-                                <button class="book-event-btn">Prenota</button>
+                                
+                                <form action="./handler/prenotazione_handler.php" method="POST">
+                                    <input type="hidden" name="Evento" value="<?= $row['IDEvento'] ?>">
+                                    <input type="hidden" name="Utente" value="<?php $user ?>">
+
+                                    <button type="submit" style="display: <?= $loggato ? 'block' : 'none' ?>" class="book-event-btn">Prenota</button>
+                                </form>
                             </div>
                         </div>
                     </div>
@@ -224,7 +202,7 @@
         </div>
 
         <div class="add-evento" style="display: flex; margin-top: 60px; cursor: pointer;" id="idplus" onclick="openCard('idplus')">
-            <div class="btn-add-evento" style="margin: auto; background-color: transparent;">
+            <div class="btn-add-evento" style="margin: auto; background-color: transparent; display: <?= $loggato ? 'block' : 'none' ?>">
                 <i class="fa-solid fa-circle-plus fa-2xl" style="background-color: transparent; font-size: 70px; color: #DFAB44;"></i>
             </div>                                       
         </div>
@@ -235,23 +213,52 @@
                 <div class="card-enlarged">
                     <h3>INSERISCI IL TUO EVENTO</h3>
                     
+                    <div class="wrapper">
+                        <form action="./handler/inserimento_handler.php" method="POST" enctype="multipart/form-data">
+                            <div class="input-field">
+                                <input type="text" name="titolo" required>
+                                <label for="titolo">Inserire titolo evento</label>
+                            </div>
+                            <div class="input-field">
+                                <input type="text" name="luogo" placeholder="Edificio, Città" required>
+                                <label for="luogo evento">Inserire luogo evento</label>
+                            </div>
+                            <div class="input-field">
+                                <input type="date" name="data" required>
+                                <label for="data evento">Inserire data evento</label>
+                            </div>
+                            <div class="input-field">
+                                <input type="time" name="ora" required>
+                                <label for="ora evento">Inserire ora evento</label>
+                            </div>
+                            <div class="input-field">
+                                <select name="categoria">
+                                    <?php
+                                        $query = "SELECT * FROM CATEGORIAINTERESSE";
+                                        $result = $conn->query($query);
+                                        if ($result->num_rows > 0) :
+                                            while ($row = $result->fetch_assoc()):?>
+                                                <option value="<?= $row['Nome'] ?>"><?= $row['Nome'] ?></option>
+                                            <?php endwhile;
+                                        endif;
+                                    ?>
+                                </select>
+                                <label for="cetegoria">Scegliere categoria</label>
+                            </div>
+                            <div class="input-field">
+                                <textarea name="descrizione">Inserire descrizione</textarea>
+                                <label for="descrizione"></label>
+                            </div>
+                            <div class="input-field">
+                                <input type="file" name="immagine" accept="image/png, image/jpg, image/jpeg">
+                            </div>
+                            <button type="submit">INSERISCI</button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <script>
-            function openCard(eventId) {
-                // Mostra il modal per l'evento
-                document.getElementById('modal-' + eventId).style.display = 'flex';
-            }
-
-            function closeCard(eventId) {
-                // Nascondi il modal
-                document.getElementById('modal-' + eventId).style.display = 'none';
-            }
-        </script>
-
-        <script src="./src/carosello.js"></script>
     </div> 
+    <script src="./src/cards.js"></script>
 </body>
-</html>
