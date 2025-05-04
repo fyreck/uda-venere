@@ -67,7 +67,8 @@
     <div class="wrapper-eventi">
         <section class="eventi eventi-prenotati">
             <h2 class="titolo-eventi" style="text-align: center;">EVENTI PRENOTATI</h2>
-            <section class="eventi-futuri">    
+
+            <section class="eventi eventi-futuri" id="eventi-futuri">    
                 <h3 class="titolo-eventi" style="text-align: center;" >EVENTI FUTURI</h3>
                 <div class="cards-wrapper" style="margin-left: <?= $loggato ? '64px' : '0px' ?>">
                     <div class="cards">
@@ -81,7 +82,9 @@
                             $stmt->execute();
                             $result = $stmt->get_result();
 
-                            if ($result->num_rows > 0) {
+                            if ($result->num_rows === 0) {
+                                echo "<span class='out'>Nessun Evento Presente</span>";
+                            }else{
                                 while ($row = $result->fetch_assoc()):
                                     $data = $row['DataEvento'];
                                     $ora = $row['OraEvento'];
@@ -191,7 +194,7 @@
                 </div>
             </section>
 
-            <section class="eventi eventi-passati">
+            <section class="eventi eventi-passati" id="eventi-passati">
                 <h3 class="titolo-eventi" style="text-align: center;" >EVENTI PASSATI</h3>
                 <div class="cards-wrapper" style="margin-left: <?= $loggato ? '64px' : '0px' ?>">
                     <div class="cards">
@@ -205,7 +208,9 @@
                             $stmt->execute();
                             $result = $stmt->get_result();
 
-                            if ($result->num_rows > 0) {
+                            if ($result->num_rows === 0) {
+                                echo "<span class='out'>Nessun Evento Presente</span>";
+                            }else{
                                 while ($row = $result->fetch_assoc()):
                                     $data = $row['DataEvento'];
                                     $ora = $row['OraEvento'];
@@ -262,7 +267,7 @@
 
                         <div class="card-modal-overlay" id="modal-<?= $row['IDEvento'] ?>">
                             <div id="card-modal-content">
-                                <button class="card-modal-close" onclick="closeCard(<?= $row['IDEvento'] ?>)">×</button>
+                                <button class="card-modal-close" onclick="closeCard(<?= $row['IDEvento'] ?>); closeComments()">×</button>
                                 <div class="card-enlarged">
                                     <h2 class="card-title"><?= $row['Titolo'] ?></h2>
                                     <div class="img-contenitore">
@@ -271,6 +276,198 @@
                                     <div class="card-info">
                                         <div class="riga">
                                             <i class="fa-solid fa-user fa-lg"></i><span><?= $row['Nome'] ?> <?= $row['Cognome'] ?></span><br>
+                                        </div>
+                                        <div class="riga">
+                                            <i class="fa-solid fa-location-dot fa-lg"></i><span><?= $row['Luogo'] ?></span><br>
+                                        </div>
+                                        <div class="riga">
+                                            <i class="fa-solid fa-clock fa-lg"></i><span><?= $data_ora ?></span><br>
+                                        </div>
+                                        <div class="riga">
+                                            <i class="fa-solid fa-align-left fa-lg"></i><span><?= $row['Descrizione'] ?></span><br>
+                                        </div>
+                                        <section class="commenti" style="display: <?= $loggato ? 'block' : 'none' ?> ">
+                                            <?php
+                                                $sql_com = "SELECT Utente, Voto, Descrizione FROM COMMENTO WHERE Evento = ?";
+                                                $stmt_com = $conn->prepare($sql_com);
+                                                $stmt_com->bind_param('i', $row['IDEvento']);
+                                                $stmt_com->execute();
+                                                $result_com = $stmt_com->get_result();
+
+                                                if ($result_com->num_rows > 0) {
+                                                    while ($row_com = $result_com->fetch_assoc()): ?>
+                                                        <div class="commento">
+                                                            <span class="user"><?= $row_com['Utente'] ?></span>
+                                                            <p class="voto"><strong><?= $row_com['Voto'] ?></strong>/5</p>
+                                                            <p class="descrizione"><?= $row_com['Descrizione'] ?></p>
+                                                        </div>
+                                                    <?php endwhile;
+                                                } else { ?>
+                                                    <span>NESSUN COMMENTO</span>
+                                                <?php }
+                                            ?>
+                                        </section>
+
+                                        <form action="./handler/commenti_handler.php" method="POST" id="form-comm" style="display: none;">
+                                            <input type="hidden" name="evento" value="<?= $row['IDEvento'] ?>">
+
+                                            <div class="input-field-comm">
+                                                <select name="voto" required>
+                                                    <option value="0">0</option>
+                                                    <option value="1">1</option>
+                                                    <option value="2">2</option>
+                                                    <option value="3">3</option>
+                                                    <option value="4">4</option>
+                                                    <option value="5">5</option>
+                                                </select>
+                                                <label for="voto" style="color: black;">Selezionare valutazione</label>
+                                            </div>
+
+                                            <div class="input-field-comm">
+                                                <textarea name="descrizione"></textarea>
+                                                <label for="descrizione" style="color: black;">Inserire descrizione</label>
+                                            </div>
+
+                                            <button type="submit" class="book-event-btn">COMMENTA</button>
+                                        </form>
+
+                                        <?php
+                                            $comm = true;
+
+                                            $qc = "SELECT * FROM COMMENTO WHERE Utente = ?";
+                                            $sc = $conn->prepare($qc);
+                                            $sc->bind_param("s", $user);
+                                            $sc->execute();
+                                            $rc = $sc->get_result();
+
+                                            if($rc->num_rows>0){
+                                                $comm = false;
+                                            }
+                                            
+                                        ?>
+                                        <button id="btn-comm"  class="book-event-btn" onclick="showComments()" style="display: <?= $comm ? 'block' : 'none' ?>;">COMMENTA</button>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <?php 
+                                endwhile; 
+                            } 
+                        ?>
+                    </div>
+                </div>
+            </section>
+        </section>
+
+        <section class="eventi-personali">
+            <h2 class="titolo-eventi" style="text-align: center;">EVENTI PERSONALI</h2>
+
+            <section class="eventi eventi-accettati" id="eventi-accettati">
+                <h3 class="titolo-eventi" style="text-align: center; display: <?= $mod ? 'none' : 'block' ?>;">EVENTI ACCETTATI</h3>
+                <div class="cards-wrapper" style="margin-left: <?= $loggato ? '64px' : '0px' ?>">
+                    <div class="cards">
+                        <?php
+                            $queryIDArtista = "SELECT IDArtista from ARTISTA WHERE Nome = ? AND Cognome = ?";
+
+                            $stmtIDArtista = $conn->prepare($queryIDArtista);
+                            $stmtIDArtista->bind_param("ss", $nomeUtente, $cognomeUtente);
+                            $stmtIDArtista->execute();
+                            $resultIDArtista = $stmtIDArtista->get_result();
+
+                            if($resultIDArtista->num_rows > 0){
+                                $rowArtista = $resultIDArtista->fetch_assoc();
+                                $IDArtista = $rowArtista['IDArtista'];
+                            }
+                            else{
+                                $qAll = "SELECT * FROM ARTISTA";
+                                $rAll = $conn->query($qAll);
+                                $proxArtista = $rAll->num_rows+1;
+                                $q = "INSERT INTO ARTISTA VALUES (?,?,?)";
+                                $s = $conn->prepare($q);
+                                $s->bind_param("iss", $proxArtista, $nomeUtente, $cognomeUtente);
+                                $s->execute();
+                                $IDArtista=$proxArtista;
+                            }
+
+                            $sql = "SELECT E.IDEvento, E.Titolo, E.DataEvento, E.OraEvento, E.Luogo, C.Nome as 'NomeCategoria', E.Descrizione, E.Immagine FROM EVENTO as E, PARTECIPAZIONE as P, CATEGORIAINTERESSE as C WHERE E.Categoria = C.IDCategoria AND E.IDEvento = P.Evento AND P.Artista = ? AND STATO = ?";
+                            
+                            $stato = 'ACCETTATO';
+                            
+                            $stmt = $conn->prepare($sql);
+                            $stmt->bind_param("ss", $IDArtista, $stato);
+                            $stmt->execute();
+                            $result = $stmt->get_result();
+
+                            if ($result->num_rows === 0) {
+                                echo "<span class='out'>Nessun Evento Presente</span>";
+                            }else{
+                                while ($row = $result->fetch_assoc()):
+                                    $data = $row['DataEvento'];
+                                    $ora = $row['OraEvento'];
+
+                                    $dataFormattata = date('d/m/Y', strtotime($data));
+                                    $oraFormattata = date('H:i', strtotime($ora));
+
+                                    $data_ora = $dataFormattata . ", " . $oraFormattata;
+                        ?>
+                        <div class="card" id="<?= $row['IDEvento'] ?>" onclick="openCard(<?= $row['IDEvento'] ?>)">
+                            <h2 class="card-title"><?= $row['Titolo'] ?></h2>
+                            <div class="img-contenitore">
+                                <img src="<?= $row['Immagine'] ?>" alt="immagine" class="card-image">
+                            </div>
+                            <div class="card-info">
+                                <div class="riga">
+                                    <i class="fa-solid fa-user fa-lg"></i><span><?= $nomeUtente ?> <?= $cognomeUtente ?></span><br>
+                                </div>
+                                <div class="riga">
+                                    <i class="fa-solid fa-location-dot fa-lg"></i><span><?= $row['Luogo'] ?></span><br>
+                                </div>
+                                <div class="riga">
+                                    <i class="fa-solid fa-clock fa-lg"></i><span><?= $data_ora ?></span><br>
+                                </div>
+                                <div class="riga">
+                                    <i class="fa-solid fa-align-left fa-lg"></i><span><?= $row['Descrizione'] ?></span><br>
+                                </div>
+                                <br><span class="riga-categoria"><?= $row['NomeCategoria'] ?></span>
+                                <section class="commenti" style="display: none;">
+                                    <?php
+                                        $sql_com = "SELECT Utente, Voto, Descrizione FROM COMMENTO WHERE Evento = ?";
+                                        $stmt_com = $conn->prepare($sql_com);
+                                        $stmt_com->bind_param('i', $row['IDEvento']);
+                                        $stmt_com->execute();
+                                        $result_com = $stmt_com->get_result();
+
+                                        if ($result_com->num_rows > 0) {
+                                            while ($row_com = $result_com->fetch_assoc()): ?>
+                                                <div class="commento">
+                                                    <span class="user"><?= $row_com['Utente'] ?></span>
+                                                    <p class="voto"><strong><?= $row_com['Voto'] ?></strong>/5</p>
+                                                    <p class="descrizione"><?= $row_com['Descrizione'] ?></p>
+                                                </div>
+                                            <?php endwhile;
+                                        } else { 
+                                    ?>
+                                    <span>NESSUN COMMENTO</span>
+                                    <?php 
+                                        }
+                                    ?>
+                                </section>
+                            </div>
+                        </div>
+
+                        <div class="card-modal-overlay" id="modal-<?= $row['IDEvento'] ?>">
+                            <div id="card-modal-content">
+                                <button class="card-modal-close" onclick="closeCard(<?= $row['IDEvento'] ?>)">×</button>
+                                <div class="card-enlarged">
+                                    <h2 class="card-title"><?= $row['Titolo'] ?></h2>
+                                    <div class="img-contenitore">
+                                        <img src="<?= $row['Immagine'] ?>" alt="immagine" class="card-image">
+                                    </div>
+                                    <div class="card-info">
+                                        <div class="riga">
+                                            <i class="fa-solid fa-user fa-lg"></i><span><?= $nomeUtente ?> <?= $cognomeUtente ?></span><br>
                                         </div>
                                         <div class="riga">
                                             <i class="fa-solid fa-location-dot fa-lg"></i><span><?= $row['Luogo'] ?></span><br>
@@ -314,41 +511,35 @@
                     </div>
                 </div>
             </section>
-        </section>
 
-        <section class="eventi-personali">
-            <section class="eventi eventi-accettati">
-            <h3 class="titolo-eventi" style="text-align: center;" >EVENTI PASSATI</h3>
+            <section class="eventi eventi-in-attesa" id="eventi-in-attesa" style="display: <?= $mod ? 'none' : 'block' ?>;">
+            <h3 class="titolo-eventi" style="text-align: center;" >EVENTI IN ATTESA</h3>
                 <div class="cards-wrapper" style="margin-left: <?= $loggato ? '64px' : '0px' ?>">
                     <div class="cards">
                         <?php
-                            $sql = "SELECT E.IDEvento, E.Titolo, E.DataEvento, E.OraEvento, E.Luogo, C.Nome as 'NomeCategoria', E.Descrizione, E.Immagine, A.Nome, A.Cognome FROM EVENTO as E, ARTISTA as A, CATEGORIAINTERESSE as C, PARTECIPAZIONE as P, UTENTE as U, PRENOTAZIONE as PR WHERE E.IDEvento = P.Evento AND A.IDArtista = P.Artista AND C.IDCategoria = E.Categoria AND A.IDArtista = ? AND E.IDEvento = PR.Evento AND E.Stato = ? GROUP BY E.IDEvento";
-
-                            $queryUtente = "SELECT Nome, Cognome FROM UTENTE WHERE NomeUtente = ?";
-                            $stmtUtente = $conn->prepare($queryUtente);
-                            $stmtUtente->bind_param("s", $user);
-                            $stmtUtente->execute();
-                            $resultUtente = $stmtUtente->get_result();
-                            $rowUtente = $resultUtente->fetch_assoc();
-                            $NomeUtente = $rowUtente['Nome'];
-                            $CognomeUtente = $rowUtente['Cognome'];
-                            
                             $queryIDArtista = "SELECT IDArtista from ARTISTA WHERE Nome = ? AND Cognome = ?";
+
                             $stmtIDArtista = $conn->prepare($queryIDArtista);
-                            $stmtIDArtista->bind_param("ss", $NomeUtente, $CognomeUtente);
+                            $stmtIDArtista->bind_param("ss", $nomeUtente, $cognomeUtente);
                             $stmtIDArtista->execute();
                             $resultIDArtista = $stmtIDArtista->get_result();
                             $rowIDArtista = $resultIDArtista->fetch_assoc();
+
                             $IDArtista = $rowIDArtista['IDArtista'];
+
+
+                            $sql = "SELECT E.IDEvento, E.Titolo, E.DataEvento, E.OraEvento, E.Luogo, C.Nome as 'NomeCategoria', E.Descrizione, E.Immagine FROM EVENTO as E, PARTECIPAZIONE as P, CATEGORIAINTERESSE as C WHERE E.Categoria = C.IDCategoria AND E.IDEvento = P.Evento AND P.Artista = ? AND STATO = ?";
                             
-                            $stato = 'ACCETTATO';
+                            $stato = 'IN ATTESA';
                             
                             $stmt = $conn->prepare($sql);
                             $stmt->bind_param("ss", $IDArtista, $stato);
                             $stmt->execute();
                             $result = $stmt->get_result();
 
-                            if ($result->num_rows > 0) {
+                            if ($result->num_rows === 0) {
+                                echo "<span class='out'>Nessun Evento Presente</span>";
+                            }else{
                                 while ($row = $result->fetch_assoc()):
                                     $data = $row['DataEvento'];
                                     $ora = $row['OraEvento'];
@@ -358,14 +549,14 @@
 
                                     $data_ora = $dataFormattata . ", " . $oraFormattata;
                         ?>
-                        <div class="card" id="<?= $row['IDEvento'] ?>" onclick="openCard(<?= $row['IDEvento'] ?>)">
+                        <div class="card card-in-attesa" id="<?= $row['IDEvento'] ?>" onclick="openCard(<?= $row['IDEvento'] ?>)">
                             <h2 class="card-title"><?= $row['Titolo'] ?></h2>
                             <div class="img-contenitore">
                                 <img src="<?= $row['Immagine'] ?>" alt="immagine" class="card-image">
                             </div>
                             <div class="card-info">
                                 <div class="riga">
-                                    <i class="fa-solid fa-user fa-lg"></i><span><?= $row['Nome'] ?> <?= $row['Cognome'] ?></span><br>
+                                    <i class="fa-solid fa-user fa-lg"></i><span><?= $nomeUtente ?> <?= $cognomeUtente ?></span><br>
                                 </div>
                                 <div class="riga">
                                     <i class="fa-solid fa-location-dot fa-lg"></i><span><?= $row['Luogo'] ?></span><br>
@@ -457,11 +648,153 @@
                     </div>
                 </div>
             </section>
+        </section>
 
-            <section class="eventi eventi-in-attesa">
+        <section class="eventi-mod">
+            <section class="eventi eventi-da-accettare" id="eventi-da-accettare" style="display: <?= $mod ? 'block' : 'none' ?>;">
+                <h2 class="titolo-eventi" style="text-align: center;">EVENTI DA ACCETTARE</h2>
+                <div class="cards-wrapper" style="margin-left: <?= $loggato ? '64px' : '0px' ?>">
+                    <div class="cards">
+                        <?php
+                            $sql = "SELECT E.IDEvento, E.Titolo, E.DataEvento, E.OraEvento, E.Luogo, C.Nome as 'NomeCategoria', E.Descrizione, E.Immagine, A.Nome, A.Cognome FROM EVENTO as E, PARTECIPAZIONE as P, CATEGORIAINTERESSE as C, ARTISTA as A WHERE E.Categoria = C.IDCategoria AND E.IDEvento = P.Evento AND A.IDArtista = P.Artista AND E.Stato = ? ORDER BY 1";
 
+                            $stato = 'IN ATTESA';
+
+                            $stmt = $conn->prepare($sql);
+                            $stmt->bind_param("s",  $stato);
+                            $stmt->execute();
+                            $result = $stmt->get_result();
+
+                            if ($result->num_rows === 0) {
+                                echo "<span class='out'>Nessun Evento Presente</span>";
+                            }else{
+                                while ($row = $result->fetch_assoc()):
+                                    $data = $row['DataEvento'];
+                                    $ora = $row['OraEvento'];
+
+                                    $dataFormattata = date('d/m/Y', strtotime($data));
+                                    $oraFormattata = date('H:i', strtotime($ora));
+
+                                    $data_ora = $dataFormattata . ", " . $oraFormattata;
+                        ?>
+                        <div class="card card-in-attesa" id="<?= $row['IDEvento'] ?>" onclick="openCard(<?= $row['IDEvento'] ?>)">
+                            <h2 class="card-title"><?= $row['Titolo'] ?></h2>
+                            <div class="img-contenitore">
+                                <img src="<?= $row['Immagine'] ?>" alt="immagine" class="card-image">
+                            </div>
+                            <div class="card-info">
+                                <div class="riga">
+                                    <i class="fa-solid fa-user fa-lg"></i><span><?= $row['Nome'] ?> <?= $row['Cognome'] ?></span><br>
+                                </div>
+                                <div class="riga">
+                                    <i class="fa-solid fa-location-dot fa-lg"></i><span><?= $row['Luogo'] ?></span><br>
+                                </div>
+                                <div class="riga">
+                                    <i class="fa-solid fa-clock fa-lg"></i><span><?= $data_ora ?></span><br>
+                                </div>
+                                <div class="riga">
+                                    <i class="fa-solid fa-align-left fa-lg"></i><span><?= $row['Descrizione'] ?></span><br>
+                                </div>
+                                <br><span class="riga-categoria"><?= $row['NomeCategoria'] ?></span>
+                                <section class="commenti" style="display: none;">
+                                    <?php
+                                        $sql_com = "SELECT Utente, Voto, Descrizione FROM COMMENTO WHERE Evento = ?";
+                                        $stmt_com = $conn->prepare($sql_com);
+                                        $stmt_com->bind_param('i', $row['IDEvento']);
+                                        $stmt_com->execute();
+                                        $result_com = $stmt_com->get_result();
+
+                                        if ($result_com->num_rows > 0) {
+                                            while ($row_com = $result_com->fetch_assoc()): ?>
+                                                <div class="commento">
+                                                    <span class="user"><?= $row_com['Utente'] ?></span>
+                                                    <p class="voto"><strong><?= $row_com['Voto'] ?></strong>/5</p>
+                                                    <p class="descrizione"><?= $row_com['Descrizione'] ?></p>
+                                                </div>
+                                            <?php endwhile;
+                                        } else { 
+                                    ?>
+                                    <span>NESSUN COMMENTO</span>
+                                    <?php 
+                                        }
+                                    ?>
+                                </section>
+                            </div>
+                        </div>
+
+                        <div class="card-modal-overlay" id="modal-<?= $row['IDEvento'] ?>"> 
+                            <div id="card-modal-content">
+                                <button class="card-modal-close" onclick="closeCard(<?= $row['IDEvento'] ?>); closeComments()">×</button>
+                                <div class="card-enlarged">
+                                    <h2 class="card-title"><?= $row['Titolo'] ?></h2>
+                                    <div class="img-contenitore">
+                                        <img src="<?= $row['Immagine'] ?>" alt="immagine" class="card-image">
+                                    </div>
+                                    <div class="card-info">
+                                        <div class="riga">
+                                            <i class="fa-solid fa-user fa-lg"></i><span><?= $row['Nome'] ?> <?= $row['Cognome'] ?></span><br>
+                                        </div>
+                                        <div class="riga">
+                                            <i class="fa-solid fa-location-dot fa-lg"></i><span><?= $row['Luogo'] ?></span><br>
+                                        </div>
+                                        <div class="riga">
+                                            <i class="fa-solid fa-clock fa-lg"></i><span><?= $data_ora ?></span><br>
+                                        </div>
+                                        <div class="riga">
+                                            <i class="fa-solid fa-align-left fa-lg"></i><span><?= $row['Descrizione'] ?></span><br>
+                                        </div>
+                                        <section class="commenti" style="display: <?= $loggato ? 'block' : 'none' ?> ">
+                                            <?php
+                                                $sql_com = "SELECT Utente, Voto, Descrizione FROM COMMENTO WHERE Evento = ?";
+                                                $stmt_com = $conn->prepare($sql_com);
+                                                $stmt_com->bind_param('i', $row['IDEvento']);
+                                                $stmt_com->execute();
+                                                $result_com = $stmt_com->get_result();
+
+                                                if ($result_com->num_rows > 0) {
+                                                    while ($row_com = $result_com->fetch_assoc()): ?>
+                                                        <div class="commento">
+                                                            <span class="user"><?= $row_com['Utente'] ?></span>
+                                                            <p class="voto"><strong><?= $row_com['Voto'] ?></strong>/5</p>
+                                                            <p class="descrizione"><?= $row_com['Descrizione'] ?></p>
+                                                        </div>
+                                                    <?php endwhile;
+                                                } else { ?>
+                                                    <span>NESSUN COMMENTO</span>
+                                                <?php }
+                                            ?>
+                                        </section>
+
+                                        <form action="./handler/accettazione-handler.php" method="POST">
+                                            <input type="hidden" name="evento" value="<?= $row['IDEvento'] ?>">
+                                            <button type="submit" class="btn-accetazione">ACCETTA</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <?php 
+                                endwhile; 
+                            } 
+                        ?>
+                    </div>
+                </div>
             </section>
         </section>
     </div>
     <script src="./src/cards.js"></script>
+
+    <script>
+
+        function showComments(){
+            document.getElementById('form-comm').style.display="block";
+            document.getElementById('btn-comm').style.display="none";
+        }
+
+        function closeComments(){
+            document.getElementById('form-comm').style.display="none";
+            document.getElementById('btn-comm').style.display="block";
+        }
+    </script>
 </body>

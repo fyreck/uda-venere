@@ -600,7 +600,7 @@ label {
     transition: 0.15s ease;
 }
 
-.eventi-prenotati > h2.titolo-eventi {
+h2.titolo-eventi {
     color: var(--secondary-color) !important;
 }
 
@@ -613,7 +613,7 @@ h3 {
     margin-top: 20px;
 }
 
-.card-passate::after{
+.card-passate::after, .card-in-attesa::after{
     content: "";
     position: absolute;
     top: 0;
@@ -623,3 +623,42 @@ h3 {
     background-color: rgba(24, 24, 33, 0.5); 
     pointer-events: none;
 } 
+
+.wrapper-forms{
+    display: flex;
+    flex-direction: column;
+    gap: 50px;
+}
+
+.data-handler{
+    /* margin-top: 2rem; */
+    max-width: 20%;
+    margin: auto;
+    display: flex;
+    flex-direction: row;
+    align-content: space-evenly;
+}
+
+.buttons{
+    display: flex;
+    flex-direction: column;
+    margin-top: 50px;
+    margin-bottom: 50px;
+    align-items: center;
+}
+
+.btn-account{
+    margin-top: 30px;
+    display: flex;
+    flex-direction: row;
+    gap: 15px;
+}
+
+.out{
+    color: var(--accent-color);
+}
+
+.wrapper-forms > form{
+    display: flex;
+    flex-direction: column;
+}

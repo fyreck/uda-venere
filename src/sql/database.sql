@@ -5,7 +5,7 @@ CREATE TABLE UTENTE(
     Email VARCHAR(255) UNIQUE NOT NULL,
     PASSWORD VARCHAR(255),
     Nome VARCHAR(255),
-    Cognome VARCHAR(255)
+    Cognome VARCHAR(255),
     TipoUtente ENUM('MOD', 'USER') DEFAULT 'USER',
     Stato ENUM('ATTIVO', 'SOSPESO', 'BANNATO') DEFAULT 'ATTIVO'
 )ENGINE = InnoDB;
@@ -15,14 +15,14 @@ CREATE TABLE CATEGORIAINTERESSE(
     Nome VARCHAR(255)	
 )ENGINE = InnoDB;
 
-INSERT INTO CATEGORIAINTERESSE(Nome) VALUES ("Stand-up Comedies"), ("Opere Teatrali"), ("Concerti"), ("Mostre Artistiche"), ("Eventi Sportivi"), ("Eventi per Bambini"), ("Eventi Culturali");
+INSERT INTO CATEGORIAINTERESSE(Nome) VALUES ("Stand-up Comedies"), ("Opere Teatrali"), ("Concerti"), ("Mostre Artistiche"), ("Eventi Sportivi"), ("Eventi per Bambini"), ("Eventi Culturali"), ("Eventi Cinematografici");
 
 CREATE TABLE PREFERENZA(
     Utente VARCHAR(255),
     Categoria INT,
     PRIMARY KEY(Utente, Categoria),
-    FOREIGN KEY (Utente) REFERENCES UTENTE(NomeUtente),
-    FOREIGN KEY (Categoria) REFERENCES CATEGORIAINTERESSE(IDCategoria)
+    FOREIGN KEY (Utente) REFERENCES UTENTE(NomeUtente) ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (Categoria) REFERENCES CATEGORIAINTERESSE(IDCategoria) ON UPDATE CASCADE ON DELETE CASCADE
 )ENGINE = InnoDB;
 
 CREATE TABLE EVENTO(
@@ -35,7 +35,7 @@ CREATE TABLE EVENTO(
     Descrizione VARCHAR(255),
     Immagine VARCHAR(255),
     Stato ENUM('IN ATTESA', 'ACCETTATO') DEFAULT 'IN ATTESA',
-    FOREIGN KEY(Categoria) REFERENCES CATEGORIAINTERESSE(IDCategoria)
+    FOREIGN KEY(Categoria) REFERENCES CATEGORIAINTERESSE(IDCategoria) ON UPDATE CASCADE ON DELETE CASCADE
 )ENGINE =  InnoDB;
 
 INSERT INTO EVENTO (Titolo, DataEvento, OraEvento, Luogo, Categoria, Descrizione, Immagine, Stato) 
@@ -50,24 +50,21 @@ VALUES  ('Risate in Piedi', '2025-05-10', '21:00:00', 'Teatro Centrale, Roma', 1
         ('Notte al Museo', '2025-06-10', '22:00:00', 'Museo Egizio, Torino', 4, 'Apertura notturna con visite guidate.', 'images/eventi/evento9.png', 'ACCETTATO'),
         ('Jazz sotto le Stelle', '2025-07-20', '20:00:00', 'Giardini Reali, Venezia', 3, 'Concerto jazz all’aperto.', 'images/eventi/evento10.png', 'ACCETTATO');
 
-INSERT INTO EVENTO (Titolo, DataEvento, OraEvento, Luogo, Categoria, Descrizione, Immagine, Stato) 
+INSERT INTO EVENTO (Titolo, DataEvento, OraEvento, Luogo, Categoria, Descrizione, Immagine) 
 VALUES ('Club Del Libro Fantasy', '2025-07-29', '11:30', 'Biblioteca Universitaria, Padova', 7, "Incontro del club del libro dell'UNIPD per l'edizione fantasy.", "images/eventi/evento11.png"), 
-("Partita di beneficenza", "2025-09-10", "Patronato Comunale, Albignasego", 5, "Partita a calcio per beneficienza", "images/eventi/evento12.png");
+("Partita di beneficenza", "2025-09-10", "16:00", "Patronato Comunale, Albignasego", 5, "Partita a calcio per beneficienza", "images/eventi/evento12.png"); 
 
-
+INSERT INTO EVENTO (Titolo, DataEvento, OraEvento, Luogo, Categoria, Descrizione, Immagine) VALUES ("Cinema sotto le stelle", "2025-05-13", "23:00", "Piccolo Teatro, Padova", 8, "Visione del film 'L'alba dell'impressionismo'", "images/eventi/evento13.png");
 
 CREATE TABLE COMMENTO(
-    IDCommento INT PRIMARY KEY,
     Evento INT,
     Utente VARCHAR(255),
     Descrizione VARCHAR(255),
     Voto INT,
-    Stato ENUM('IN ATTESA', 'ACCETTATO') DEFAULT 'IN ATTESA',
-    FOREIGN KEY(Evento) REFERENCES EVENTO(IDEvento),
-    FOREIGN KEY(Utente) REFERENCES UTENTE(NomeUtente)
+    PRIMARY KEY (Evento, Utente),
+    FOREIGN KEY(Evento) REFERENCES EVENTO(IDEvento) ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY(Utente) REFERENCES UTENTE(NomeUtente) ON UPDATE CASCADE ON DELETE CASCADE
 )ENGINE = InnoDB;
-
-ALTER TABLE COMMENTO MODIFY IDCommento INT AUTO_INCREMENT;
 
 CREATE TABLE ARTISTA(
     IDArtista INT PRIMARY KEY,
@@ -91,8 +88,8 @@ CREATE TABLE PARTECIPAZIONE(
     Evento INT,
     Artista INT,
     PRIMARY KEY(Evento, Artista),
-    FOREIGN KEY(Evento) REFERENCES EVENTO(IDEvento),
-    FOREIGN KEY(Artista) REFERENCES ARTISTA(IDArtista)
+    FOREIGN KEY(Evento) REFERENCES EVENTO(IDEvento) ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY(Artista) REFERENCES ARTISTA(IDArtista) ON UPDATE CASCADE ON DELETE CASCADE
 )ENGINE = InnoDB;
 
 INSERT INTO PARTECIPAZIONE (Evento, Artista) 
@@ -111,6 +108,6 @@ CREATE TABLE PRENOTAZIONE(
     Evento INT,
     Utente VARCHAR(255),
     PRIMARY KEY(Evento, Utente),
-    FOREIGN KEY(Evento) REFERENCES EVENTO(IDEvento),
-    FOREIGN KEY(UTENTE) REFERENCES UTENTE(NomeUtente)
+    FOREIGN KEY(Evento) REFERENCES EVENTO(IDEvento) ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY(UTENTE) REFERENCES UTENTE(NomeUtente) ON UPDATE CASCADE ON DELETE CASCADE
 )Engine=InnoDB;

@@ -221,9 +221,12 @@ button:hover {
 .register {
     text-align: center;
     margin-top: 30px;
-    color: #fff;
+    color: var(--primary-light);
 }
 
+a{
+    color: var(--primary-light);
+}
 
 /* SIGN UP */
 

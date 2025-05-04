@@ -36,7 +36,11 @@
             $nomeImmagine = "evento" . $proxEvento . "." . $estensione;
             $percorsoImg = $cartellaImmagini . $nomeImmagine;
 
-            $stato = "ACCETTATO"; 
+            if($mod){
+                $stato = "ACCETTATO"; 
+            }else{
+                $stato = "IN ATTESA";
+            }
 
             $queryCheck = "SELECT * FROM EVENTO WHERE Titolo = ? AND DataEvento = ? AND OraEvento = ?";
             $stmtCheck = $conn->prepare($queryCheck);

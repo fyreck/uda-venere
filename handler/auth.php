@@ -33,5 +33,14 @@
         }else{
             $mod = false;
         }
+
+        $query = "SELECT Nome, Cognome FROM UTENTE WHERE NomeUtente = ?";
+        $stmt = $conn->prepare($query);
+        $stmt->bind_param("s", $user);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $row = $result->fetch_assoc();
+        $nomeUtente = $row['Nome'];
+        $cognomeUtente = $row['Cognome'];
     }
 ?>
