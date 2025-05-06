@@ -24,7 +24,6 @@ header {
     width: 100%;
     position: fixed;
     height: 17%;
-    border: 1px solid red;
     background-color: var(--primary-dark);
     z-index: 10;
 }
@@ -51,7 +50,6 @@ h1 {
 }
 
 .button {
-    border: 1px solid whitesmoke;
     display: inline;
     position: absolute;
     top: 15%;
