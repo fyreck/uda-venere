@@ -24,7 +24,6 @@ header {
     width: 100%;
     position: fixed;
     height: 17%;
-    border: 1px solid red;
     background-color: var(--primary-dark);
     z-index: 10;
 }
@@ -51,7 +50,6 @@ h1 {
 }
 
 .button {
-    border: 1px solid whitesmoke;
     display: inline;
     position: absolute;
     top: 15%;
@@ -192,7 +190,6 @@ header {
     width: 100%;
     position: fixed;
     height: 17%;
-    border: 1px solid red;
     z-index: 69%;
     background-color: var(--primary-dark);
     z-index: 10;
@@ -203,7 +200,6 @@ header {
 }
 
 .button {
-    border: 1px solid whitesmoke;
     position: absolute;
     top: 15%;
     right: 1%;
@@ -516,6 +512,7 @@ section.commenti {
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     background-color: rgba(24, 24, 33, 0.35);
+    margin: auto; !important;
 }
 
 form {

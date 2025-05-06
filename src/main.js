@@ -12,9 +12,10 @@ for (let i = 1; i <= imageCount; i++) {
     images.push(`frame/${i}.png`);
 }
 
-setInterval(function() {
-    document.getElementById("content").innerHTML = scrollY;
-}, 1);
+// Rimosso l'aggiornamento continuo dell'innerHTML
+// setInterval(function() {
+//     document.getElementById("content").innerHTML = scrollY;
+// }, 1);
 
 document.getElementById("planet-frame").style.transform = `translateX(-50%)`; // Imposta la posizione iniziale
 
@@ -31,6 +32,28 @@ window.addEventListener("scroll", () => {
     // Calcola la traslazione usando la funzione calcolaTraslazione
     const translateValue = calcolaTraslazione(imageIndex);
     document.getElementById("planet-frame").style.transform = `translateX(${translateValue}%)`;
+
+    // Gestione della visibilità dei div basata sullo scroll
+    let primoDiv = document.getElementById("primo");
+    if (scrollY >= 800 && scrollY < 1600) {
+        primoDiv.classList.add("visible");
+    } else {
+        primoDiv.classList.remove("visible");
+    }
+
+    let secondoDiv = document.getElementById("secondo");
+    if (scrollY >= 1800 && scrollY < 2600) {
+        secondoDiv.classList.add("visible");
+    } else {
+        secondoDiv.classList.remove("visible");
+    }
+
+    let terzoDiv = document.getElementById("terzo");
+    if (scrollY >= 2800) {
+        terzoDiv.classList.add("visible");
+    } else {
+        terzoDiv.classList.remove("visible");
+    }
 });
 
 function calcolaTraslazione(slideIndex) {
@@ -38,42 +61,15 @@ function calcolaTraslazione(slideIndex) {
 
     if (slideIndex <= 0) {
         translateValue = -50;
-    } else if (slideIndex >= imageCount -1 ) {
+    } else if (slideIndex >= imageCount - 1) {
         translateValue = -90;
     } else {
         // Calcola una traslazione lineare tra -50 e -90
-        translateValue = -50 - ((slideIndex / (imageCount -1)) * 40);
+        translateValue = -50 - ((slideIndex / (imageCount - 1)) * 40);
     }
-    
+
     return translateValue;
 }
-
-setInterval(function() {
-    let primoDiv = document.getElementById("primo");
-    if (scrollY >= 800 && scrollY < 1600) {
-        primoDiv.classList.add("visible");
-    } else {
-        primoDiv.classList.remove("visible");
-    }
-}, 1);
-
-setInterval(function() {
-    let secondoDiv = document.getElementById("secondo");
-    if (scrollY >= 1800 && scrollY < 2600) {
-        secondoDiv.classList.add("visible");
-    } else {
-        secondoDiv.classList.remove("visible");
-    }
-}, 1);
-
-setInterval(function() {
-    let terzoDiv = document.getElementById("terzo");
-    if (scrollY >= 2800) {
-        terzoDiv.classList.add("visible");
-    } else {
-        terzoDiv.classList.remove("visible");
-    }
-}, 1);
 
 function generaNumeroCasuale() {
     // Genera un numero casuale tra 1 e 20 (inclusi).
@@ -81,10 +77,11 @@ function generaNumeroCasuale() {
 
     const spanElement = document.getElementById("meme");
 
-    if(numeroCasuale == 17) {
+    if (numeroCasuale == 17) {
         spanElement.style.display = "inline";
+    } else {
+        spanElement.style.display = "none"; // Assicurati che sia nascosto quando non è il numero fortunato
     }
 }
 
-generaNumeroCasuale(); 
-
+generaNumeroCasuale();
