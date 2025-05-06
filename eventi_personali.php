@@ -16,7 +16,7 @@
     <title>UDA Venere</title>
     <link rel="stylesheet" href="./src/plainstyle.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-
+    <link rel="icon" href="./images/favicon.png" type="image/x-icon">
 
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -54,8 +54,8 @@
                     </a>
                 </button>
                 <button class="btn-nav btn-users" style="display: <?= $mod ? 'block' : 'none' ?>;">
-                    <a href="./gestione_utenti">
-                        <i class="fa-solid fa-user-gear fa-2xl"></i>
+                    <a href="./gestione.php">
+                        <i class="fa-solid fa-gear fa-2xl"></i>
                     </a>
                 </button>
             </div>
@@ -73,12 +73,14 @@
                 <div class="cards-wrapper" style="margin-left: <?= $loggato ? '64px' : '0px' ?>">
                     <div class="cards">
                         <?php
-                            $sql = "SELECT E.IDEvento, E.Titolo, E.DataEvento, E.OraEvento, E.Luogo, C.Nome as 'NomeCategoria', E.Descrizione, E.Immagine, A.Nome, A.Cognome FROM EVENTO as E, ARTISTA as A, CATEGORIAINTERESSE as C, PARTECIPAZIONE as P, UTENTE as U, PRENOTAZIONE as PR WHERE E.IDEvento = P.Evento AND A.IDArtista = P.Artista AND C.IDCategoria = E.Categoria AND U.NomeUtente = ? AND E.IDEvento = PR.Evento AND E.DataEvento > ? GROUP BY E.IDEvento";
+                            $sql = "SELECT E.IDEvento, E.Titolo, E.DataEvento, E.OraEvento, E.Luogo, C.Nome as 'NomeCategoria', E.Descrizione, E.Immagine, E.Prezzo, E.NumeroPosti, A.Nome, A.Cognome FROM EVENTO as E, ARTISTA as A, CATEGORIAINTERESSE as C, PARTECIPAZIONE as P, UTENTE as U, PRENOTAZIONE as PR WHERE E.IDEvento = P.Evento AND A.IDArtista = P.Artista AND C.IDCategoria = E.Categoria AND U.NomeUtente = ? AND E.IDEvento = PR.Evento AND E.DataEvento > ? AND E.Stato = ? GROUP BY E.IDEvento";
 
                             $oggi = date('Y-m-d');
+                            
+                            $stato = "ACCETTATO";
 
                             $stmt = $conn->prepare($sql);
-                            $stmt->bind_param("ss", $user, $oggi);
+                            $stmt->bind_param("sss", $user, $oggi, $stato);
                             $stmt->execute();
                             $result = $stmt->get_result();
 
@@ -108,6 +110,14 @@
                                 </div>
                                 <div class="riga">
                                     <i class="fa-solid fa-clock fa-lg"></i><span><?= $data_ora ?></span><br>
+                                </div>
+                                    <div class="riga">
+                                    <i class="fa-solid fa-ticket fa-lg"></i><span><?= $row['NumeroPosti'] ?></span><br>
+                                </div>
+                                <div class="riga">
+                                    <i class="fa-solid fa-money-bill fa-lg"></i>
+                                    <span><?php if($row['Prezzo']==0){ echo "gratuito"; }else{ echo "€ " . $row['Prezzo'];} ?>
+                                    </span><br>
                                 </div>
                                 <div class="riga">
                                     <i class="fa-solid fa-align-left fa-lg"></i><span><?= $row['Descrizione'] ?></span><br>
@@ -158,6 +168,14 @@
                                             <i class="fa-solid fa-clock fa-lg"></i><span><?= $data_ora ?></span><br>
                                         </div>
                                         <div class="riga">
+                                            <i class="fa-solid fa-ticket fa-lg"></i><span><?= $row['NumeroPosti'] ?></span><br>
+                                        </div>
+                                        <div class="riga">
+                                            <i class="fa-solid fa-money-bill fa-lg"></i>
+                                            <span><?php if($row['Prezzo']==0){ echo "gratuito"; }else{ echo "€ " . $row['Prezzo'];} ?>
+                                            </span><br>
+                                        </div>
+                                        <div class="riga">
                                             <i class="fa-solid fa-align-left fa-lg"></i><span><?= $row['Descrizione'] ?></span><br>
                                         </div>
                                         <section class="commenti" style="display: <?= $loggato ? 'block' : 'none' ?> ">
@@ -199,12 +217,13 @@
                 <div class="cards-wrapper" style="margin-left: <?= $loggato ? '64px' : '0px' ?>">
                     <div class="cards">
                         <?php
-                            $sql = "SELECT E.IDEvento, E.Titolo, E.DataEvento, E.OraEvento, E.Luogo, C.Nome as 'NomeCategoria', E.Descrizione, E.Immagine, A.Nome, A.Cognome FROM EVENTO as E, ARTISTA as A, CATEGORIAINTERESSE as C, PARTECIPAZIONE as P, UTENTE as U, PRENOTAZIONE as PR WHERE E.IDEvento = P.Evento AND A.IDArtista = P.Artista AND C.IDCategoria = E.Categoria AND U.NomeUtente = ? AND E.IDEvento = PR.Evento AND E.DataEvento < ? GROUP BY E.IDEvento";
+                            $sql = "SELECT E.IDEvento, E.Titolo, E.DataEvento, E.OraEvento, E.Luogo, C.Nome as 'NomeCategoria', E.Descrizione, E.Immagine, E.Prezzo, E.NumeroPosti, A.Nome, A.Cognome FROM EVENTO as E, ARTISTA as A, CATEGORIAINTERESSE as C, PARTECIPAZIONE as P, UTENTE as U, PRENOTAZIONE as PR WHERE E.IDEvento = P.Evento AND A.IDArtista = P.Artista AND C.IDCategoria = E.Categoria AND U.NomeUtente = ? AND E.IDEvento = PR.Evento AND E.DataEvento < ? AND E.Stato = ? GROUP BY E.IDEvento";
 
                             $oggi = date('Y-m-d');
+                            $stato = "ACCETTATO";
 
                             $stmt = $conn->prepare($sql);
-                            $stmt->bind_param("ss", $user, $oggi);
+                            $stmt->bind_param("sss", $user, $oggi, $stato);
                             $stmt->execute();
                             $result = $stmt->get_result();
 
@@ -234,6 +253,14 @@
                                 </div>
                                 <div class="riga">
                                     <i class="fa-solid fa-clock fa-lg"></i><span><?= $data_ora ?></span><br>
+                                </div>
+                                <div class="riga">
+                                    <i class="fa-solid fa-ticket fa-lg"></i><span><?= $row['NumeroPosti'] ?></span><br>
+                                </div>
+                                <div class="riga">
+                                    <i class="fa-solid fa-money-bill fa-lg"></i>
+                                    <span><?php if($row['Prezzo']==0){ echo "gratuito"; }else{ echo "€ " . $row['Prezzo'];} ?>
+                                    </span><br>
                                 </div>
                                 <div class="riga">
                                     <i class="fa-solid fa-align-left fa-lg"></i><span><?= $row['Descrizione'] ?></span><br>
@@ -282,6 +309,14 @@
                                         </div>
                                         <div class="riga">
                                             <i class="fa-solid fa-clock fa-lg"></i><span><?= $data_ora ?></span><br>
+                                        </div>
+                                        <div class="riga">
+                                            <i class="fa-solid fa-ticket fa-lg"></i><span><?= $row['NumeroPosti'] ?></span><br>
+                                        </div>
+                                        <div class="riga">
+                                            <i class="fa-solid fa-money-bill fa-lg"></i>
+                                            <span><?php if($row['Prezzo']==0){ echo "gratuito"; }else{ echo "€ " . $row['Prezzo'];} ?>
+                                            </span><br>
                                         </div>
                                         <div class="riga">
                                             <i class="fa-solid fa-align-left fa-lg"></i><span><?= $row['Descrizione'] ?></span><br>
@@ -391,7 +426,7 @@
                                 $IDArtista=$proxArtista;
                             }
 
-                            $sql = "SELECT E.IDEvento, E.Titolo, E.DataEvento, E.OraEvento, E.Luogo, C.Nome as 'NomeCategoria', E.Descrizione, E.Immagine FROM EVENTO as E, PARTECIPAZIONE as P, CATEGORIAINTERESSE as C WHERE E.Categoria = C.IDCategoria AND E.IDEvento = P.Evento AND P.Artista = ? AND STATO = ?";
+                            $sql = "SELECT E.IDEvento, E.Titolo, E.DataEvento, E.OraEvento, E.Luogo, C.Nome as 'NomeCategoria', E.Descrizione, E.Immagine, E.Prezzo, E.NumeroPosti FROM EVENTO as E, PARTECIPAZIONE as P, CATEGORIAINTERESSE as C WHERE E.Categoria = C.IDCategoria AND E.IDEvento = P.Evento AND P.Artista = ? AND STATO = ?";
                             
                             $stato = 'ACCETTATO';
                             
@@ -426,6 +461,14 @@
                                 </div>
                                 <div class="riga">
                                     <i class="fa-solid fa-clock fa-lg"></i><span><?= $data_ora ?></span><br>
+                                </div>
+                                <div class="riga">
+                                    <i class="fa-solid fa-ticket fa-lg"></i><span><?= $row['NumeroPosti'] ?></span><br>
+                                </div>
+                                <div class="riga">
+                                    <i class="fa-solid fa-money-bill fa-lg"></i>
+                                    <span><?php if($row['Prezzo']==0){ echo "gratuito"; }else{ echo "€ " . $row['Prezzo'];} ?>
+                                    </span><br>
                                 </div>
                                 <div class="riga">
                                     <i class="fa-solid fa-align-left fa-lg"></i><span><?= $row['Descrizione'] ?></span><br>
@@ -474,6 +517,14 @@
                                         </div>
                                         <div class="riga">
                                             <i class="fa-solid fa-clock fa-lg"></i><span><?= $data_ora ?></span><br>
+                                        </div>
+                                        <div class="riga">
+                                            <i class="fa-solid fa-ticket fa-lg"></i><span><?= $row['NumeroPosti'] ?></span><br>
+                                        </div>
+                                        <div class="riga">
+                                            <i class="fa-solid fa-money-bill fa-lg"></i>
+                                            <span><?php if($row['Prezzo']==0){ echo "gratuito"; }else{ echo "€ " . $row['Prezzo'];} ?>
+                                            </span><br>
                                         </div>
                                         <div class="riga">
                                             <i class="fa-solid fa-align-left fa-lg"></i><span><?= $row['Descrizione'] ?></span><br>
@@ -528,7 +579,7 @@
                             $IDArtista = $rowIDArtista['IDArtista'];
 
 
-                            $sql = "SELECT E.IDEvento, E.Titolo, E.DataEvento, E.OraEvento, E.Luogo, C.Nome as 'NomeCategoria', E.Descrizione, E.Immagine FROM EVENTO as E, PARTECIPAZIONE as P, CATEGORIAINTERESSE as C WHERE E.Categoria = C.IDCategoria AND E.IDEvento = P.Evento AND P.Artista = ? AND STATO = ?";
+                            $sql = "SELECT E.IDEvento, E.Titolo, E.DataEvento, E.OraEvento, E.Luogo, C.Nome as 'NomeCategoria', E.Descrizione, E.Immagine, E.Prezzo, E.NumeroPosti FROM EVENTO as E, PARTECIPAZIONE as P, CATEGORIAINTERESSE as C WHERE E.Categoria = C.IDCategoria AND E.IDEvento = P.Evento AND P.Artista = ? AND STATO = ?";
                             
                             $stato = 'IN ATTESA';
                             
@@ -563,6 +614,14 @@
                                 </div>
                                 <div class="riga">
                                     <i class="fa-solid fa-clock fa-lg"></i><span><?= $data_ora ?></span><br>
+                                </div>
+                                <div class="riga">
+                                    <i class="fa-solid fa-ticket fa-lg"></i><span><?= $row['NumeroPosti'] ?></span><br>
+                                </div>
+                                <div class="riga">
+                                    <i class="fa-solid fa-money-bill fa-lg"></i>
+                                    <span><?php if($row['Prezzo']==0){ echo "gratuito"; }else{ echo "€ " . $row['Prezzo'];} ?>
+                                    </span><br>
                                 </div>
                                 <div class="riga">
                                     <i class="fa-solid fa-align-left fa-lg"></i><span><?= $row['Descrizione'] ?></span><br>
@@ -613,6 +672,14 @@
                                             <i class="fa-solid fa-clock fa-lg"></i><span><?= $data_ora ?></span><br>
                                         </div>
                                         <div class="riga">
+                                            <i class="fa-solid fa-ticket fa-lg"></i><span><?= $row['NumeroPosti'] ?></span><br>
+                                        </div>
+                                        <div class="riga">
+                                            <i class="fa-solid fa-money-bill fa-lg"></i>
+                                            <span><?php if($row['Prezzo']==0){ echo "gratuito"; }else{ echo "€ " . $row['Prezzo'];} ?>
+                                            </span><br>
+                                        </div>
+                                        <div class="riga">
                                             <i class="fa-solid fa-align-left fa-lg"></i><span><?= $row['Descrizione'] ?></span><br>
                                         </div>
                                         <section class="commenti" style="display: <?= $loggato ? 'block' : 'none' ?> ">
@@ -656,7 +723,7 @@
                 <div class="cards-wrapper" style="margin-left: <?= $loggato ? '64px' : '0px' ?>">
                     <div class="cards">
                         <?php
-                            $sql = "SELECT E.IDEvento, E.Titolo, E.DataEvento, E.OraEvento, E.Luogo, C.Nome as 'NomeCategoria', E.Descrizione, E.Immagine, A.Nome, A.Cognome FROM EVENTO as E, PARTECIPAZIONE as P, CATEGORIAINTERESSE as C, ARTISTA as A WHERE E.Categoria = C.IDCategoria AND E.IDEvento = P.Evento AND A.IDArtista = P.Artista AND E.Stato = ? ORDER BY 1";
+                            $sql = "SELECT E.IDEvento, E.Titolo, E.DataEvento, E.OraEvento, E.Luogo, C.Nome as 'NomeCategoria', E.Descrizione, E.Immagine, E.Prezzo, E.NumeroPosti, A.Nome, A.Cognome FROM EVENTO as E, PARTECIPAZIONE as P, CATEGORIAINTERESSE as C, ARTISTA as A WHERE E.Categoria = C.IDCategoria AND E.IDEvento = P.Evento AND A.IDArtista = P.Artista AND E.Stato = ? ORDER BY 1";
 
                             $stato = 'IN ATTESA';
 
@@ -677,7 +744,7 @@
 
                                     $data_ora = $dataFormattata . ", " . $oraFormattata;
                         ?>
-                        <div class="card card-in-attesa" id="<?= $row['IDEvento'] ?>" onclick="openCard(<?= $row['IDEvento'] ?>)">
+                        <div class="card card-in-attesa" id="<?= $row['IDEvento'] ?>" onclick="openCardMod(<?= $row['IDEvento'] ?>)">
                             <h2 class="card-title"><?= $row['Titolo'] ?></h2>
                             <div class="img-contenitore">
                                 <img src="<?= $row['Immagine'] ?>" alt="immagine" class="card-image">
@@ -691,6 +758,14 @@
                                 </div>
                                 <div class="riga">
                                     <i class="fa-solid fa-clock fa-lg"></i><span><?= $data_ora ?></span><br>
+                                </div>
+                                <div class="riga">
+                                    <i class="fa-solid fa-ticket fa-lg"></i><span><?= $row['NumeroPosti'] ?></span><br>
+                                </div>
+                                <div class="riga">
+                                    <i class="fa-solid fa-money-bill fa-lg"></i>
+                                    <span><?php if($row['Prezzo']==0){ echo "gratuito"; }else{ echo "€ " . $row['Prezzo'];} ?>
+                                    </span><br>
                                 </div>
                                 <div class="riga">
                                     <i class="fa-solid fa-align-left fa-lg"></i><span><?= $row['Descrizione'] ?></span><br>
@@ -722,9 +797,9 @@
                             </div>
                         </div>
 
-                        <div class="card-modal-overlay" id="modal-<?= $row['IDEvento'] ?>"> 
+                        <div class="card-modal-overlay" id="modal-mod-<?= $row['IDEvento'] ?>"> 
                             <div id="card-modal-content">
-                                <button class="card-modal-close" onclick="closeCard(<?= $row['IDEvento'] ?>); closeComments()">×</button>
+                                <button class="card-modal-close" onclick="closeCardMod(<?= $row['IDEvento'] ?>); closeComments()">×</button>
                                 <div class="card-enlarged">
                                     <h2 class="card-title"><?= $row['Titolo'] ?></h2>
                                     <div class="img-contenitore">
@@ -739,6 +814,14 @@
                                         </div>
                                         <div class="riga">
                                             <i class="fa-solid fa-clock fa-lg"></i><span><?= $data_ora ?></span><br>
+                                        </div>
+                                        <div class="riga">
+                                            <i class="fa-solid fa-ticket fa-lg"></i><span><?= $row['NumeroPosti'] ?></span><br>
+                                        </div>
+                                        <div class="riga">
+                                            <i class="fa-solid fa-money-bill fa-lg"></i>
+                                            <span><?php if($row['Prezzo']==0){ echo "gratuito"; }else{ echo "€ " . $row['Prezzo'];} ?>
+                                            </span><br>
                                         </div>
                                         <div class="riga">
                                             <i class="fa-solid fa-align-left fa-lg"></i><span><?= $row['Descrizione'] ?></span><br>
@@ -786,6 +869,13 @@
     <script src="./src/cards.js"></script>
 
     <script>
+        function openCardMod(eventId) {
+          document.getElementById('modal-mod-' + eventId).style.display = 'flex';
+        }
+        function closeCardMod(eventId) {
+          document.getElementById('modal-mod-' + eventId).style.display = 'none';
+    	}
+
 
         function showComments(){
             document.getElementById('form-comm').style.display="block";

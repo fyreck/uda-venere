@@ -613,7 +613,7 @@ h3 {
     margin-top: 20px;
 }
 
-.card-passate::after, .card-in-attesa::after{
+.card-passate::before, .card-in-attesa::before{
     content: "";
     position: absolute;
     top: 0;
@@ -661,4 +661,13 @@ h3 {
 .wrapper-forms > form{
     display: flex;
     flex-direction: column;
+}
+
+.gestione-eventi{
+    display: flex;
+    flex-direction: row;
+    max-width: 30%;
+    margin: auto;
+    align-items: center;
+    justify-content: space-evenly;
 }
