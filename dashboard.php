@@ -20,7 +20,7 @@
     <title>UDA Venere</title>
     <link rel="stylesheet" href="./src/plainstyle.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-
+	<link rel="icon" href="./images/favicon.png" type="image/x-icon">
 
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -63,8 +63,8 @@
                         </a>
                     </button>
                     <button class="btn-nav btn-users" style="display: <?= $mod ? 'block' : 'none' ?>;">
-                        <a href="./gestione_utenti">
-                            <i class="fa-solid fa-user-gear fa-2xl"></i>
+                        <a href="./gestione.php">
+                            <i class="fa-solid fa-gear fa-2xl"></i>
                         </a>
                     </button>
                 </div>
@@ -75,18 +75,20 @@
         <div class="cards-wrapper" style="margin-left: <?= $loggato ? '64px' : '0px' ?>">
             <div class="cards">
                 <?php
-                    $sql = "SELECT E.IDEvento, E.Titolo, E.DataEvento, E.OraEvento, E.Luogo, C.Nome as 'NomeCategoria', E.Descrizione, E.Immagine, A.Nome, A.Cognome 
+                    $sql = "SELECT E.IDEvento, E.Titolo, E.DataEvento, E.OraEvento, E.Luogo, C.Nome as 'NomeCategoria', E.Descrizione, E.Immagine, E.Prezzo, E.NumeroPosti, A.Nome, A.Cognome 
                             FROM EVENTO as E
                             JOIN PARTECIPAZIONE as P ON E.IDEvento = P.Evento
                             JOIN ARTISTA as A ON A.IDArtista = P.Artista
                             JOIN CATEGORIAINTERESSE as C ON E.Categoria = C.IDCategoria
-                            WHERE E.DataEvento > ?
+                            WHERE E.DataEvento > ? AND E.Stato = ? AND E.NumeroPosti > 0
                             ORDER BY E.IDEvento";
 
                     $oggi = date('Y-m-d');
+                    
+                    $stato = "ACCETTATO";
 
                     $stmt = $conn->prepare($sql);
-                    $stmt->bind_param("s", $oggi);
+                    $stmt->bind_param("ss", $oggi, $stato);
                     $stmt->execute();
                     $result = $stmt->get_result();
 
@@ -114,6 +116,14 @@
                             </div>
                             <div class="riga">
                                 <i class="fa-solid fa-clock fa-lg"></i><span><?= $data_ora ?></span><br>
+                            </div>
+                            <div class="riga">
+                                <i class="fa-solid fa-ticket fa-lg"></i><span><?= $row['NumeroPosti'] ?></span><br>
+                            </div>
+                            <div class="riga">
+                                <i class="fa-solid fa-money-bill fa-lg"></i>
+                                <span><?php if($row['Prezzo']==0){ echo "gratuito"; }else{ echo "€ " . $row['Prezzo'];} ?>
+                                </span><br>
                             </div>
                             <div class="riga">
                                 <i class="fa-solid fa-align-left fa-lg"></i><span><?= $row['Descrizione'] ?></span><br>
@@ -160,6 +170,14 @@
                                     </div>
                                     <div class="riga">
                                         <i class="fa-solid fa-clock fa-lg"></i><span><?= $data_ora ?></span><br>
+                                    </div>
+                                    <div class="riga">
+                                        <i class="fa-solid fa-ticket fa-lg"></i><span><?= $row['NumeroPosti'] ?></span><br>
+                                    </div>
+                                    <div class="riga">
+                                        <i class="fa-solid fa-money-bill fa-lg"></i>
+                                        <span><?php if($row['Prezzo']==0){ echo "gratuito"; }else{ echo "€ " . $row['Prezzo'];} ?>
+                                        </span><br>
                                     </div>
                                     <div class="riga">
                                         <i class="fa-solid fa-align-left fa-lg"></i><span><?= $row['Descrizione'] ?></span><br>
@@ -214,46 +232,55 @@
                     <h3>INSERISCI IL TUO EVENTO</h3>
                     
                     <div class="wrapper">
-                        <form action="./handler/inserimento_handler.php" method="POST" enctype="multipart/form-data">
-                            <div class="input-field">
-                                <input type="text" name="titolo" required>
-                                <label for="titolo">Inserire titolo evento</label>
-                            </div>
-                            <div class="input-field">
-                                <input type="text" name="luogo" placeholder="Edificio, Città" required>
-                                <label for="luogo evento">Inserire luogo evento</label>
-                            </div>
-                            <div class="input-field">
-                                <input type="date" name="data" required>
-                                <label for="data evento">Inserire data evento</label>
-                            </div>
-                            <div class="input-field">
-                                <input type="time" name="ora" required>
-                                <label for="ora evento">Inserire ora evento</label>
-                            </div>
-                            <div class="input-field">
-                                <select name="categoria">
-                                    <?php
-                                        $query = "SELECT * FROM CATEGORIAINTERESSE";
-                                        $result = $conn->query($query);
-                                        if ($result->num_rows > 0) :
-                                            while ($row = $result->fetch_assoc()):?>
-                                                <option value="<?= $row['Nome'] ?>"><?= $row['Nome'] ?></option>
-                                            <?php endwhile;
-                                        endif;
-                                    ?>
-                                </select>
-                                <label for="cetegoria">Scegliere categoria</label>
-                            </div>
-                            <div class="input-field">
-                                <textarea name="descrizione">Inserire descrizione</textarea>
-                                <label for="descrizione"></label>
-                            </div>
-                            <div class="input-field">
-                                <input type="file" name="immagine" accept="image/png, image/jpg, image/jpeg">
-                            </div>
-                            <button type="submit">INSERISCI</button>
-                        </form>
+                    <form action="./handler/inserimento_handler.php" method="POST" enctype="multipart/form-data">
+                                <div class="input-field">
+                                    <input type="text" name="titolo" required>
+                                    <label for="titolo">Inserire titolo evento</label>
+                                </div>
+                                <div class="input-field">
+                                    <input type="text" name="luogo" placeholder="Edificio, Città" required>
+                                    <label for="luogo evento">Inserire luogo evento</label>
+                                </div>
+                                <div class="input-field">
+                                    <label for="data evento">Inserire data evento</label><br><br>
+                                    <input type="date" name="data" required>
+                                </div>
+                                <div class="input-field">
+                                    <label for="ora evento">Inserire ora evento</label><br><br>
+                                    <input type="time" name="ora" required>
+                                </div>
+                                <div class="input-field">
+                                    <input type="number" name="posti" required>
+                                    <label for="posti">Inserire numero posti disponibili</label>
+                                </div>
+                                <div class="input-field">
+                                    <input type="number" name="prezzo" required>
+                                    <label for="prezzo evento">Inserire prezzo evento</label>
+                                </div>
+                                <div class="input-field">
+                                    <label for="cetegoria">Scegliere categoria</label><br><br>
+                                    <select name="categoria">
+                                        <?php
+                                            $query = "SELECT * FROM CATEGORIAINTERESSE";
+                                            $result = $conn->query($query);
+                                            if ($result->num_rows > 0) :
+                                                while ($row = $result->fetch_assoc()):?>
+                                                    <option value="<?= $row['Nome'] ?>"><?= $row['Nome'] ?></option>
+                                                <?php endwhile;
+                                            endif;
+                                        ?>
+                                    </select>
+                                    <label for="cetegoria">Scegliere categoria</label>
+                                </div>
+                                <div class="input-field">
+                                    <textarea name="descrizione">Inserire descrizione</textarea>
+                                    <label for="descrizione"></label>
+                                </div>
+                                <div class="input-field">
+                                    <input type="file" name="immagine" accept="image/png, image/jpg, image/jpeg">
+                                </div>
+                                <button type="submit">INSERISCI</button>
+                            </form>
                     </div>
                 </div>
             </div>

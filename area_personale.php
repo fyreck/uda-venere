@@ -15,7 +15,7 @@
     <title>UDA Venere</title>
     <link rel="stylesheet" href="./src/plainstyle.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-
+	<link rel="icon" href="./images/favicon.png" type="image/x-icon">
 
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -46,8 +46,8 @@
                     </a>
                 </button>
                 <button class="btn-nav btn-users" style="display: <?= $mod ? 'block' : 'none' ?>;">
-                    <a href="./gestione_utenti">
-                        <i class="fa-solid fa-user-gear fa-2xl"></i>
+                    <a href="./gestione.php">
+                        <i class="fa-solid fa-gear fa-2xl"></i>
                     </a>
                 </button>
             </div>
@@ -97,13 +97,13 @@
 
             <?php
             
-                $queryCount = "SELECT P.Artista FROM PARTECIPAZIONE as P, Artista as A WHERE P.Artista = A.IDArtista AND A.Nome = ? AND A.Cognome = ?";
-                $stmtCount = $conn->prepare($queryCount);
+                $q = "SELECT * FROM PARTECIPAZIONE AS P, ARTISTA AS A WHERE P.Artista = A.IDArtista AND A.Nome = ? AND A.Cognome = ?";
+                $s = $conn->prepare($q);
                 $nome = $row['Nome'];
                 $cognome = $row['Cognome'];
-                $stmtCount->bind_param("ss", $nome, $cognome);
-                $stmtCount->execute();
-                $resultCount = $stmtCount->get_result();
+                $s->bind_param("ss", $nome, $cognome);
+                $s->execute();
+                $resultCount=$s->get_result();
                     
                 if($resultCount->num_rows >= 3 && !$mod){
                     echo "<button type='submit' class='btn btn-mod'>DIVENTA MODERATORE</button>";
@@ -124,4 +124,4 @@
         </section>
     </section>
 
-</body>
+</body>

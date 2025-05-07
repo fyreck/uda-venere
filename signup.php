@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>UDA Venere</title>
-    <!-- <link rel="stylesheet" href="./src/style.css"> -->
+    <link rel="icon" href="./images/favicon.png" type="image/x-icon">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -40,6 +40,11 @@
                 <input type="password" name="pw" placeholder="..." required>
                 <label for="password">Inserire la propria password</label>
             </div>
+            <div class="input-field">
+                <input type="checkbox" name="newsletter" value="SI">
+                <label for="newsletter">Vuoi partecipare alla newsletter?</label>
+            </div>
+
             <button type="submit" id="btn-next">CONTINUA</button>
 
             <div class="register">
@@ -66,6 +71,7 @@
             <input type="hidden" name="cognome">
             <input type="hidden" name="mail">
             <input type="hidden" name="pw">
+            <input type="hidden" name="newsletter" value="SI">
 
             <button type="submit">REGISTRATI</button>
         </form>
@@ -83,6 +89,7 @@
             formDue.cognome.value = formUno.cognome.value;
             formDue.mail.value = formUno.mail.value;
             formDue.pw.value = formUno.pw.value;
+            formDue.newsletter.value = formUno.newsletter.value;
 
             document.getElementById("form-uno").style.display = "none";
             document.getElementById("form-due").style.display = "block";
@@ -96,4 +103,4 @@
         }
     ?>
 
-</body>
+</body>
