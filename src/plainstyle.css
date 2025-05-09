@@ -8,6 +8,10 @@
     margin: 0px;
 }
 
+button.btn-nav > i{
+	color: var(--primary-dark);
+}
+
 :root {
     --primary-color: #CF6E0D;
     --secondary-color: #DFAB44;
@@ -18,6 +22,7 @@
 
 body {
     background-color: var(--primary-dark);
+    height: 100%;
 }
 
 header {
@@ -28,9 +33,9 @@ header {
     z-index: 10;
 }
 
-.spacer {
-    height: 17vh; /* Spazio sotto l'header fisso */
-}
+/*.spacer {
+    height: 17vh; 
+}*/
 
 h1 {
     font-family: "Ephesis", cursive;
@@ -206,7 +211,7 @@ header {
 }
 
 .button a {
-    display: inline-block;               /* essenziale per formare il “pulsante” */
+    display: inline-block;               
     background-color: var(--secondary-color);
     text-decoration: none;
     color: black;
@@ -222,7 +227,7 @@ header {
 }
 
 /* CARDS */
-body {
+/*body {
     margin: 0;
     overflow-x: visible;
 }
@@ -278,28 +283,28 @@ body {
     font-weight: 800;
     text-transform: uppercase;
     margin-bottom: 1rem;
-}
+}*/
 
 /* NAVBAR */
 nav{
     position: fixed;
     left: 0;
-    top: 17%;
-    width: 65px;
-    height: 100%;
+    top: 0%;
+    width: 75px;
+    min-height: 100vh;
     background-color: var(--secondary-color);
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
-    padding-top: 8px;
+    padding-top: 20px;
     padding-bottom: 8px;
-    z-index: 8;
+    z-index: 11;
 }
 
 .btn-nav{
-    z-index: 10;
+    z-index: 11;
     background-color: transparent;
     border: transparent;
 }
@@ -309,16 +314,16 @@ nav{
     color: var(--primary-dark);
 }
 
-.btn-container, .btn-else{
+.btn-container{
     display: flex;
     flex-direction: column; 
     align-items: center; 
-    gap: 80px;
+    gap: 150px;
 }
 
 .focus {
-    width: 50px;
-    height: 50px;
+    width: 55px;
+    height: 55px;
     display: inline-flex;               
     align-items: center;
     justify-content: center;
@@ -512,7 +517,7 @@ section.commenti {
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     background-color: rgba(24, 24, 33, 0.35);
-    margin: auto; !important;
+    margin: auto !important;
 }
 
 form {
@@ -582,9 +587,9 @@ button {
 }
 
 button:hover {
-    color: var(--primary-light);
+    color: var(--primary-dark);
     border-color: var(--primary-light);
-    background: rgba(255, 255, 255, 0.15);
+    background: var(--primary-color);
 }
 
 label {
@@ -610,7 +615,7 @@ h3 {
     margin-top: 20px;
 }
 
-.card-passate::before, .card-in-attesa::before{
+.card-passate::after, .card-in-attesa::after{
     content: "";
     position: absolute;
     top: 0;
@@ -629,11 +634,15 @@ h3 {
 
 .data-handler{
     /* margin-top: 2rem; */
-    max-width: 20%;
+    max-width: 50%;
     margin: auto;
     display: flex;
     flex-direction: row;
     align-content: space-evenly;
+}
+
+.data-handler>form>button{
+	width: 100%;
 }
 
 .buttons{
@@ -660,11 +669,6 @@ h3 {
     flex-direction: column;
 }
 
-.gestione-eventi{
-    display: flex;
-    flex-direction: row;
-    max-width: 30%;
-    margin: auto;
-    align-items: center;
-    justify-content: space-evenly;
+h3>span{
+	color: var(--secondary-color) !important;
 }

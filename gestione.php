@@ -2,7 +2,7 @@
     require "./handler/conn.php";
     require "./handler/auth.php";
 
-    if(!$loggato || !$mod){
+    if(!$loggato || !$owner){
         header("Location: ./login.php");
         exit();
     }
@@ -42,246 +42,101 @@
 
         <nav style="display: <?= $loggato ? 'block' : 'none' ?> ">
             <div class="btn-container">
-                <button class="btn-nav btn-dash">
-                    <a href="./dashboard.php">
+            	<a href="./dashboard.php">
+                	<button class="btn-nav btn-dash">
+                    
                         <i class="fa-solid fa-list-ul fa-2xl"></i>
-                    </a>
-                </button>
-                <div class="btn-else">
-                    <button class="btn-nav btn-tickets">
-                        <a href="./eventi_personali.php">
-                            <i class="fa-solid fa-ticket fa-2xl"></i>
-                        </a>
-                    </button>
-                    <button class="btn-nav btn-personal">
-                        <a href="./area_personale.php">
-                            <i class="fa-solid fa-user fa-2xl"></i>
-                        </a>
-                    </button>
-                    <button class="btn-nav btn-users focus" style="display: <?= $mod ? 'block' : 'none' ?>;">
-                        <a href="./gestione">
-                            <i class="fa-solid fa-gear fa-2xl"></i>
-                        </a>
-                    </button>
-                </div>
+                    
+                	</button>
+                </a>
+                <a href="./eventi_personali.php" class="btn-nav">
+                  <button class="btn-nav btn-tickets">
+                    <i class="fa-solid fa-ticket fa-2xl"></i>
+                  </button>
+                </a>
+                <a href="./area_personale.php" class="btn-nav">
+                  <button class="btn-nav btn-personal">
+                    <i class="fa-solid fa-user fa-2xl"></i>
+                  </button>
+                </a>
+                <a href="./gestione.php" class="btn-nav">
+                  <button class="btn-nav btn-users focus" style="display: <?= $owner ? 'block' : 'none' ?>;">    
+                    <i class="fa-solid fa-gear fa-2xl"></i>
+                  </button> 
+                </a>
             </div>
         </nav>
 
-        <h2 class="titolo-eventi" style="text-align: center;">GESTIONE EVENTI</h2>
-        <filedset class="gestione-eventi">
-            <div class="add-evento" style="display: flex; margin-top: 60px; cursor: pointer;" id="idplus" onclick="openCard('idplus')">
-                <div class="btn-add-evento" style="margin: auto; background-color: transparent; display: <?= $loggato ? 'block' : 'none' ?>">
-                    <i class="fa-solid fa-circle-plus fa-2xl" style="background-color: transparent; font-size: 70px; color: #DFAB44;"></i>
-                </div>                                       
-            </div>
+        <div class="wrapper wrapper-query" style="width: 80%;">
+            <h2 class="titolo-eventi">GESTIONE QUERY</h2>
+            <h3>PAGINA DI VISUALIZZAZIONE QUERY A SCOPO DIDATTICO*</h3><br><br>
+			
+            <h3>I titoli e le date delle esposizioni tematiche che si sono tenute nel periodo 1 gennaio – 31
+                dicembre di un determinato anno</h3><br><br>
+            <form class="query query-uno" action="./handler/query-uno-handler.php" method="POST">
+                <label for="anni">seleziona anno</label>
+                <select name="anni">
 
-            <div class="update-evento" style="display: flex; margin-top: 60px; cursor: pointer;" id="idplus" onclick="openCard('idinfo')">
-                <div class="btn-add-evento" style="margin: auto; background-color: transparent; display: <?= $loggato ? 'block' : 'none' ?>">
-                    <i class="fa-solid fa-circle-info fa-2xl" style="background-color: transparent; font-size: 70px; color: #DFAB44;"></i>
-                </div>                                       
-            </div>
+                    <?php
+                        $q = "SELECT DISTINCT YEAR(DataEvento) AS anno FROM EVENTO ORDER BY anno DESC";
+                        $r = $conn->query($q);
+                        if($r->num_rows>0){
+                            foreach($r as $anno){
+                                echo '<option value="' . $anno['anno'] . '">' . $anno['anno'] . '</option>';
+                            }
+                        }
+                    ?>
+                
+                </select>
 
-            <div class="update-evento" style="display: flex; margin-top: 60px; cursor: pointer;" id="idplus" onclick="openCard('idminus')">
-                <div class="btn-add-evento" style="margin: auto; background-color: transparent; display: <?= $loggato ? 'block' : 'none' ?>">
-                    <i class="fa-solid fa-circle-xmark fa-2xl" style="background-color: transparent; font-size: 70px; color: #DFAB44;"></i>
-                </div>                                       
-            </div>
+                <button type="submit">CERCA</button>
+            </form><br><br><br>
+            
+            <h3>Il numero dei biglietti emessi per una determinata esposizione</h3><br><br>
+            <form class="query query-due" action="handler/query-due-handler.php" method="POST">
+                <label for="anni">seleziona anno</label>
+                <select name="eventi">
 
-            <div class="card-modal-overlay" id="modal-idplus">
-                <div id="card-modal-content">
-                    <button class="card-modal-close" onclick="closeCard('idplus')">×</button>
-                    <div class="card-enlarged">
-                        <h3>INSERISCI EVENTO</h3>
-                        
-                        <div class="wrapper">
-                            <form action="./handler/inserimento_handler.php" method="POST" enctype="multipart/form-data">
-                                <div class="input-field">
-                                    <input type="text" name="titolo" required>
-                                    <label for="titolo">Inserire titolo evento</label>
-                                </div>
-                                <div class="input-field">
-                                    <input type="text" name="luogo" placeholder="Edificio, Città" required>
-                                    <label for="luogo evento">Inserire luogo evento</label>
-                                </div>
-                                <div class="input-field">
-                                    <input type="date" name="data" required>
-                                    <label for="data evento">Inserire data evento</label>
-                                </div>
-                                <div class="input-field">
-                                    <input type="time" name="ora" required>
-                                    <label for="ora evento">Inserire ora evento</label>
-                                </div>
-                                <div class="input-field">
-                                    <input type="number" name="posti" required>
-                                    <label for="posti">Inserire numero posti disponibili</label>
-                                </div>
-                                <div class="input-field">
-                                    <input type="number" name="prezzo" required>
-                                    <label for="prezzo evento">Inserire prezzo evento</label>
-                                </div>
-                                <div class="input-field">
-                                    <label for="cetegoria">Scegliere categoria</label><br><br>
-                                    <select name="categoria">
-                                        <?php
-                                            $query = "SELECT * FROM CATEGORIAINTERESSE";
-                                            $result = $conn->query($query);
-                                            if ($result->num_rows > 0) :
-                                                while ($row = $result->fetch_assoc()):?>
-                                                    <option value="<?= $row['Nome'] ?>"><?= $row['Nome'] ?></option>
-                                                <?php endwhile;
-                                            endif;
-                                        ?>
-                                    </select>
-                                    <label for="cetegoria">Scegliere categoria</label>
-                                </div>
-                                <div class="input-field">
-                                    <textarea name="descrizione">Inserire descrizione</textarea>
-                                    <label for="descrizione"></label>
-                                </div>
-                                <div class="input-field">
-                                    <input type="file" name="immagine" accept="image/png, image/jpg, image/jpeg">
-                                </div>
-                                <button type="submit">INSERISCI</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                    <?php
+                        $q = "SELECT Titolo FROM EVENTO";
+                        $r = $conn->query($q);
+                        if($r->num_rows>0){
+                            foreach($r as $e){
+                                echo '<option value="' . $e['Titolo'] . '">' . $e['Titolo'] . '</option>';
+                            }
+                        }
+                    ?>
+                
+                </select>
 
-            <div class="card-modal-overlay" id="modal-idinfo">
-                <div id="card-modal-content">
-                    <button class="card-modal-close" onclick="closeCard('idinfo')">×</button>
-                    <div class="card-enlarged">
-                        <h3>MODIFICA EVENTO</h3>
-                        
-                        <div class="wrapper">
-                            <form id="form-uno" method="POST">
-                                <div class="input-field">
-                                    <label for="evento">Scegliere il titolo dell'evento da modificare</label><br><br>
-                                    <select name="evento">
-                                    <?php
-                                        $query = "SELECT Titolo FROM EVENTO";
-                                        $result = $conn->query($query);
-                                        if ($result->num_rows > 0) :
-                                            while ($row = $result->fetch_assoc()):?>
-                                                <option value="<?= $row['Titolo'] ?>"><?= $row['Titolo'] ?></option>
-                                            <?php endwhile;
-                                        endif;
-                                    ?>
-                                    </select>
-                                </div>
-                                <button type="submit" onclick="openCard('idmore')">ELIMINA</button>
-                            </form>
-                            
-                        </div>
-                    </div>
-                </div>
-            </div>
+                <button type="submit">CERCA</button>
+            </form><br><br><br>
+            
+            <h3>Il ricavato della vendita dei biglietti di una determinata esposizione</h3><br><br>
+            <form class="query query-tre" action="handler/query-tre-handler.php" method="POST">
+                <label for="anni">seleziona anno</label>
+                <select name="anni">
 
-            <div class="card-modal-overlay" id="modal-idmore">
-                <div id="card-modal-content">
-                    <button class="card-modal-close" onclick="closeCard('idmore')">×</button>
-                    <div class="card-enlarged">
-                        <h3>INSERISCI EVENTO</h3>
-                        
-                        <div class="wrapper">
-                        <form action="./handler/modifica_handler.php" method="POST" enctype="multipart/form-data" id="form-due">
-                                <div class="input-field">
-                                    <input type="text" name="titolo" required>
-                                    <label for="titolo">Inserire titolo evento</label>
-                                </div>
-                                <div class="input-field">
-                                    <input type="text" name="luogo" placeholder="Edificio, Città" required>
-                                    <label for="luogo evento">Inserire luogo evento</label>
-                                </div>
-                                <div class="input-field">
-                                    <input type="date" name="data" required>
-                                    <label for="data evento">Inserire data evento</label>
-                                </div>
-                                <div class="input-field">
-                                    <input type="time" name="ora" required>
-                                    <label for="ora evento">Inserire ora evento</label>
-                                </div>
-                                <div class="input-field">
-                                    <input type="number" name="posti" required>
-                                    <label for="posti">Inserire numero posti disponibili</label>
-                                </div>
-                                <div class="input-field">
-                                    <input type="number" name="prezzo" required>
-                                    <label for="prezzo evento">Inserire prezzo evento</label>
-                                </div>
-                                <div class="input-field">
-                                    <select name="categoria">
-                                        <?php
-                                            $query = "SELECT * FROM CATEGORIAINTERESSE";
-                                            $result = $conn->query($query);
-                                            if ($result->num_rows > 0) :
-                                                while ($row = $result->fetch_assoc()):?>
-                                                    <option value="<?= $row['Nome'] ?>"><?= $row['Nome'] ?></option>
-                                                <?php endwhile;
-                                            endif;
-                                        ?>
-                                    </select>
-                                    <label for="cetegoria">Scegliere categoria</label>
-                                </div>
-                                <div class="input-field">
-                                    <textarea name="descrizione">Inserire descrizione</textarea>
-                                    <label for="descrizione"></label>
-                                </div>
-                                <div class="input-field">
-                                    <input type="file" name="immagine" accept="image/png, image/jpg, image/jpeg">
-                                </div>
-                                <button type="submit">MODIFICA</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                    <?php
+                        $q = "SELECT Titolo FROM EVENTO";
+                        $r = $conn->query($q);
+                        if($r->num_rows>0){
+                            foreach($r as $e){
+                                echo '<option value="' . $e['Titolo'] . '">' . $e['Titolo'] . '</option>';
+                            }
+                        }
+                    ?>
+                
+                </select>
 
-            <div class="card-modal-overlay" id="modal-idminus">
-                <div id="card-modal-content">
-                    <button class="card-modal-close" onclick="closeCard('idminus')">×</button>
-                    <div class="card-enlarged">
-                        <h3>ELIMINA EVENTO</h3>
-                        
-                        <div class="wrapper">
-                            <form action="./handler/eliminazione_handler.php" method="POST" enctype="multipart/form-data">
-                                <div class="input-field">
-                                    <label for="evento">Scegliere il titolo dell'evento da eliminare</label><br><br>
-                                    <select name="evento">
-                                        <?php
-                                            $query = "SELECT Titolo FROM EVENTO";
-                                            $result = $conn->query($query);
-                                            if ($result->num_rows > 0) :
-                                                while ($row = $result->fetch_assoc()):?>
-                                                    <option value="<?= $row['Titolo'] ?>"><?= $row['Titolo'] ?></option>
-                                                <?php endwhile;
-                                            endif;
-                                        ?>
-                                    </select>
-                                </div>
-                                <button type="submit">ELIMINA</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </filedset>
+                <button type="submit">CERCA</button>
+            </form>
+        </div>
+        
+
+
 
     </div>
 
-    <script src="./src/cards.js"></script>
-    <script>
-        <script>
-        document.getElementById("form-uno").addEventListener("submit", function(e) {
-            e.preventDefault();
-
-            const formUno = document.forms["form-uno"];
-            const formDue = document.forms["form-due"];
-
-            document.getElementById("form-uno").style.display = "none";
-            document.getElementById("form-due").style.display = "block";
-        });
-    </script>
-    </script>
+    
 </body>

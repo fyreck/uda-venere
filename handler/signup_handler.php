@@ -12,6 +12,9 @@
     $email = trim($_POST['mail']);
     $password = $_POST['pw'];
     $categorie = $_POST['categorie'] ?? [];
+    $newsletter = $_POST['newsletter'];
+    if(isset($_POST['newsletter'])){ $newsletter = 'SI';}
+    else{ $newsletter = 'NO'; }
 
     if (empty($categorie)) {
         $_SESSION['error'] = "Devi selezionare almeno una categoria di interesse.";
@@ -32,42 +35,27 @@
 
     $passwordHash = password_hash($password, PASSWORD_DEFAULT);
 
-    $stmtUtente = $conn->prepare("INSERT INTO UTENTE (NomeUtente, Email, Password, Nome, Cognome) VALUES (?, ?, ?, ?, ?)");
+    $stmtUtente = $conn->prepare("INSERT INTO UTENTE (NomeUtente, Email, Password, Nome, Cognome, Newsletter) VALUES (?, ?, ?, ?, ?, ?)");
     if (!$stmtUtente) {
         $_SESSION['error'] = "Errore nella preparazione della query utente: " . $conn->error;
         header("Location: ../signup.php");
         exit;
     }
-    $stmtUtente->bind_param("sssss", $username, $email, $passwordHash, $nome, $cognome);
+    $stmtUtente->bind_param("ssssss", $username, $email, $passwordHash, $nome, $cognome, $newsletter);
     if (!$stmtUtente->execute()) {
         $_SESSION['error'] = "Errore nell'inserimento dell'utente: " . $stmtUtente->error;
         header("Location: ../signup.php");
         exit;
     }
-    $stmtUtente->close();
 
-    $stmtGetId = $conn->prepare("SELECT IDCategoria FROM CategoriaInteresse WHERE Nome = ?");
-    $stmtInsertPref = $conn->prepare("INSERT INTO PREFERENZA (Utente, Categoria) VALUES (?, ?)");
-
-    foreach ($categorie as $catNome) {
-        $stmtGetId->bind_param("s", $catNome);
-        $stmtGetId->execute();
-
-        $stmtGetId->store_result();
-
-        $stmtGetId->bind_result($idcat);
-        if ($stmtGetId->fetch()) {
-            $stmtInsertPref->bind_param("si", $username, $idcat);
-            if (!$stmtInsertPref->execute()) {
-                $_SESSION['error'] = "Errore nell'aggiunta della preferenza '$catNome': " . $stmtInsertPref->error;
-            }
-        }
-        $stmtGetId->free_result(); 
+    foreach($categorie as $c){
+        $q = "INSERT INTO CATEGORIAINTERESSE VALUES (?,?)";
+        $s = $conn->prepare($q);
+        $s->bind_param("si", $username, $c);
+        $s->execute();
     }
 
 
-    $stmtGetId->close();
-    $stmtInsertPref->close();
 
     if (empty($_SESSION['error'])) {
         $_SESSION['success'] = "Registrazione completata con successo!";
