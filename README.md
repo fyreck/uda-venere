@@ -140,7 +140,7 @@ if ($result->num_rows > 0) {
 
 $subject = "Scopri nuovi i eventi che pensiamo possano entusiasmarti!";
 
-$html_template = <<<EOT
+
 ```
 Vengono selezionati i dati necessari per la newsletter.
 La newsletter deve essere inviata ogni inizio settimana, indicando agli utenti iscritti gli enventi che si svolgeranno nell'arco della settimana relativi alla categoria d'interesse da loro espressa.
@@ -150,62 +150,26 @@ Per ottenere gli eventi della settimana è stata usata la funzione di ```MYSQL Y
 
 ---
 
-Di seguito si ha la struttura che andrà ad assumere la newsletter che viene inserita nella variabile ```$html_template```.
+Di seguito si assegna alla variabile ```$html_template``` la struttura che andrà ad assumere la newsletter sottoforma di pagina `html` .
 ```html
+$html_template = <<<EOT
   <body>
-    <div class="container">
-      <div class="header">
-        <h1>Ciao [NOME] [COGNOME]!</h1>       </div>
-      <div class="content">
-        <p>Grandi notizie! Abbiamo nuovi eventi pronti per te.</p>
-        
-        <p>
-          Lasciati ispirare da questi titoli e divertiti!
-        </p>
-        <ul>
-        	[LISTA_EVENTI]
-        </ul>
-        <p><a href="../dashboard.php" class="button">Prenota Ora!</a></p>
-        <hr />
-      </div>
-      <div class="footer">
-        <p>VenUS&copy; [ANNO]</p>
-      </div>
-    </div>
+    ...
   </body>
-```
-```php
 EOT;
-        $headers = "MIME-Version: 1.0" . "\r\n";
-        $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
-        $headers .= "From: udavenere@altervista.org" . "\r\n"; 
-
-        // Itera su ogni riga del risultato della query
-        while ($row = $result->fetch_assoc()) {
-            $to = $row['Email'];
-            $nome = $row['Nome'];
-            $cognome = $row['Cognome'];
-
-            // Sostituisci i placeholder nell'HTML con i dati dell'utente
-            $message = str_replace('[NOME]', $nome, $html_template);
-            $message = str_replace('[COGNOME]', $cognome, $message);
-
-            // Invio dell'email
-            if (mail($to, $subject, $message, $headers)) {
-                echo "Email inviata con successo a $to<br>";
-            } else {
-                echo "Errore nell'invio dell'email a $to<br>";
-                // Puoi aggiungere un log degli errori qui
-                // error_log("Errore invio email a $to: " . error_get_last()['message']);
-            }
-        }
-    } else {
-        echo "Nessun utente iscritto alla newsletter trovato.<br>";
-    }
-
-    $conn->close();
 ```
-È stata usata la funzione ```mail``` di ```PHP``` per inviare la mail e la newsletter è stata automatizzata grazie ai ```cron job``` offerti da ```Altervista```.
+Poi vengono compilati gli attibuto dell'intestazione della mail
+```php
+$headers = "MIME-Version: 1.0" . "\r\n";
+$headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
+$headers .= "From: udavenere@altervista.org" . "\r\n"; 
+```
+E la mail viene inviata grazie alla funzione ```mail``` di ```PHP```. La newsletter è stata automatizzata grazie ai ```cron job``` offerti da ```Altervista```.
+```php
+if (mail($to, $subject, $message, $headers)) {
+    echo "Email inviata con successo a $to<br>";
+} 
+```
 ### Heredoc
 Tutto il corpo dell'email viene memorizzato in una variabile ```$html_template``` tramite l'operatore ```<<<EOT```. 
 L'Heredoc permette di inserire tutto il codice ```HTML``` senza dover usare le virgolette per ogni riga, mantenendo la formattazione leggibile. In questo modo basta passare la variabile ```$html_template``` all'interno della funzione ```mail() ``` di ```php``` per inviare il template come corpo del messaggio.
@@ -261,65 +225,12 @@ La funzione ```filter_var()``` con attributo ```FILTER_VALIDATE_EMAIL``` di ```P
 Nella stessa pagina di Sign-up sono presenti due form differenti visibili una alla volta per condurre l'utente passo dopo passo alla sua registrazione.
 ```html
 <!-- FORM UNO -->
-<form id="form-uno">
-    <div class="input-field">
-        <input type="text" placeholder="..." name="username" required>
-        <label for="username">Scegliere un proprio username</label>
-    </div>
-    <div class="input-field">
-        <input type="text" name="nome" placeholder="..." required>
-        <label for="nome_cognome">Inserire nome </label>
-    </div>
-    <div class="input-field">
-        <input type="text" name="cognome" placeholder="..." required>
-        <label for="nome_cognome">Inserire cognome </label>
-    </div>
-    <div class="input-field">    
-        <input type="email" name="mail" placeholder="..." required>
-        <label for="mail">Inserire la propria email</label>
-    </div>
-    <div class="input-field">
-        <input type="password" name="pw" placeholder="..." required>
-        <label for="password">Inserire la propria password</label>
-    </div>
-    <div class="input-field">
-        <input type="checkbox" name="newsletter">
-        <label for="newsletter">Vuoi partecipare alla newsletter?</label>
-    </div>
-    <button type="submit" id="btn-next">CONTINUA</button>
-
-    <div class="register">
-        <p>Hai un account? <a href="./login.php" style="text-decoration: none; color: #D9D9D9">Accedi</a></p>
-    </div>
-</form>
+<form id="form-uno">...</form>
 
 <!-- FORM DUE -->
-<form id="form-due" action="handler/signup_handler.php" method="POST" style="display: none;">
-    <?php
-        require "./handler/conn.php";
-        
-        $query = "SELECT * FROM CATEGORIAINTERESSE";
-        $result = $conn->query($query);
-        
-        if ($result){
-            while ($row = $result->fetch_assoc()): ?>
-                <input type="checkbox" name="categorie[]" value="<?= $row['Nome'] ?>">
-                <label><?= $row['Nome'] ?></label><br><br>
-            <?php endwhile;
-        }
-    ?>
-
-    <input type="hidden" name="username">
-    <input type="hidden" name="nome">
-    <input type="hidden" name="cognome">
-    <input type="hidden" name="mail">
-    <input type="hidden" name="pw">
-<input type="hidden" name="newsletter">			
-
-    <button type="submit">REGISTRATI</button>
-</form>
+<form id="form-due" action="handler/signup_handler.php" method="POST" style="display: none;">...</form>
 ```
-La prima form è statica e recupera i dati anagrafici dell'utente. La seconda è popolata dinamicamente con le categoria presenti in database. 
+La prima form è statica e permette l'inserimento dei dati anagrafici da parte dell'utente. La seconda è popolata dinamicamente con le categoria presenti in database. 
 Per non perdere i dati caricati nella prima form, questi vengono manipolati con ```JavaScript``` e vengono impostati come ```value``` negli ```input``` con ```type='hidden'``` della seconda form.
 ```javascript
 document.getElementById("form-uno").addEventListener("submit", function(e) {
