@@ -28,6 +28,7 @@
 
                 if (password_verify($password, $user['PASSWORD'])) {
                     $_SESSION['user'] = $mail_user;
+                    $_SESSION['LAST_ACTIVITY']=time();
                     header("Location: ../dashboard.php");
                     exit();
                 } else {
@@ -42,4 +43,4 @@
             }
         }
     }
-?>
+?>

@@ -3,12 +3,7 @@
     require "./handler/auth.php";
 
     if($conn->connect_errno){
-        $_SESSION['error_page']='conn';
-
-        // TODO: error_page.php di landing con visualizzazione errore
-
-        header("Location: error_page.php");
-        exit;
+        $_SESSION['error']='conn';
     }
 ?>
 
@@ -17,7 +12,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UDA Venere</title>
+    <title>Dashboard</title>
     <link rel="stylesheet" href="./src/plainstyle.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 	<link rel="icon" href="./images/favicon.png" type="image/x-icon">
@@ -44,31 +39,29 @@
 
         <div class="spacer"></div>
 
-        <nav style="display: <?= $loggato ? 'block' : 'none' ?> ">
+        <nav style="display: <?= $loggato ? 'block' : 'none' ?>;">
             <div class="btn-container">
-                <button class="btn-nav btn-dash focus">
-                    <a href="./dashboard.php">
+            	<a href="./dashboard.php" class="btn-nav">
+                	<button class="btn-nav btn-dash focus">
                         <i class="fa-solid fa-list-ul fa-2xl"></i>
-                    </a>
-                </button>
-                <div class="btn-else">
-                    <button class="btn-nav btn-tickets">
-                        <a href="./eventi_personali.php">
-                            <i class="fa-solid fa-ticket fa-2xl"></i>
-                        </a>
-                    </button>
-                    <button class="btn-nav btn-personal">
-                        <a href="./area_personale.php">
-                            <i class="fa-solid fa-user fa-2xl"></i>
-                        </a>
-                    </button>
-                    <button class="btn-nav btn-users" style="display: <?= $mod ? 'block' : 'none' ?>;">
-                        <a href="./gestione.php">
-                            <i class="fa-solid fa-gear fa-2xl"></i>
-                        </a>
-                    </button>
-                </div>
-            </div>
+                	</button>
+              	</a>
+                <a href="./eventi_personali.php" class="btn-nav">
+                  <button class="btn-nav btn-tickets">
+                    <i class="fa-solid fa-ticket fa-2xl"></i>
+                  </button>
+                </a>
+                <a href="./area_personale.php" class="btn-nav">
+                  <button class="btn-nav btn-personal">
+                    <i class="fa-solid fa-user fa-2xl"></i>
+                  </button>
+                </a>
+                <a href="./gestione.php" class="btn-nav">
+                  <button class="btn-nav btn-users" style="display: <?= $owner ? 'block' : 'none' ?>;">    
+                    <i class="fa-solid fa-gear fa-2xl"></i>
+                  </button> 
+                </a>
+          	</div>
         </nav>
 
 
@@ -117,10 +110,10 @@
                             <div class="riga">
                                 <i class="fa-solid fa-clock fa-lg"></i><span><?= $data_ora ?></span><br>
                             </div>
-                            <div class="riga">
+                            <div class="riga" style="display: <?= $loggato ? "block" : "none" ?>">
                                 <i class="fa-solid fa-ticket fa-lg"></i><span><?= $row['NumeroPosti'] ?></span><br>
                             </div>
-                            <div class="riga">
+                            <div class="riga" style="display: <?= $loggato ? "block" : "none" ?>">
                                 <i class="fa-solid fa-money-bill fa-lg"></i>
                                 <span><?php if($row['Prezzo']==0){ echo "gratuito"; }else{ echo "€ " . $row['Prezzo'];} ?>
                                 </span><br>
@@ -171,10 +164,10 @@
                                     <div class="riga">
                                         <i class="fa-solid fa-clock fa-lg"></i><span><?= $data_ora ?></span><br>
                                     </div>
-                                    <div class="riga">
+                                    <div class="riga" style="display: <?= $loggato ? "block" : "none" ?>">
                                         <i class="fa-solid fa-ticket fa-lg"></i><span><?= $row['NumeroPosti'] ?></span><br>
                                     </div>
-                                    <div class="riga">
+                                    <div class="riga" style="display: <?= $loggato ? "block" : "none" ?>">
                                         <i class="fa-solid fa-money-bill fa-lg"></i>
                                         <span><?php if($row['Prezzo']==0){ echo "gratuito"; }else{ echo "€ " . $row['Prezzo'];} ?>
                                         </span><br>

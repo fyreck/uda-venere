@@ -2,6 +2,7 @@
     require "./handler/conn.php";
     require "./handler/auth.php";
 
+
     if(!$loggato){
         header("Location: ./login.php");
         exit();
@@ -12,7 +13,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UDA Venere</title>
+    <title>Area Personale</title>
     <link rel="stylesheet" href="./src/plainstyle.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 	<link rel="icon" href="./images/favicon.png" type="image/x-icon">
@@ -29,28 +30,26 @@
 
     <nav style="display: <?= $loggato ? 'block' : 'none' ?> ">
         <div class="btn-container">
-            <button class="btn-nav btn-dash">
-                <a href="./dashboard.php">
-                    <i class="fa-solid fa-list-ul fa-2xl"></i>
-                </a>
-            </button>
-            <div class="btn-else">
-                <button class="btn-nav btn-tickets">
-                    <a href="./eventi_personali.php">
-                        <i class="fa-solid fa-ticket fa-2xl"></i>
-                    </a>
-                </button>
-                <button class="btn-nav btn-personal focus">
-                    <a href="./area_personale.php">
-                        <i class="fa-solid fa-user fa-2xl"></i>
-                    </a>
-                </button>
-                <button class="btn-nav btn-users" style="display: <?= $mod ? 'block' : 'none' ?>;">
-                    <a href="./gestione.php">
-                        <i class="fa-solid fa-gear fa-2xl"></i>
-                    </a>
-                </button>
-            </div>
+            <a href="./dashboard.php" class="btn-nav">
+                	<button class="btn-nav btn-dash">
+                        <i class="fa-solid fa-list-ul fa-2xl"></i>
+                	</button>
+              	</a>
+            <a href="./eventi_personali.php" class="btn-nav">
+              <button class="btn-nav btn-tickets">
+                <i class="fa-solid fa-ticket fa-2xl"></i>
+              </button>
+            </a>
+            <a href="./area_personale.php" class="btn-nav">
+              <button class="btn-nav btn-personal focus">
+                <i class="fa-solid fa-user fa-2xl"></i>
+              </button>
+            </a>
+            <a href="./gestione.php" class="btn-nav">
+              <button class="btn-nav btn-users" style="display: <?= $owner ? 'block' : 'none' ?>;">    
+                <i class="fa-solid fa-gear fa-2xl"></i>
+              </button> 
+            </a>
         </div>
     </nav>
 
@@ -59,7 +58,7 @@
     <br>
 
     <?php
-        $query = "SELECT Nome, Cognome, Email, TipoUtente FROM UTENTE WHERE NomeUtente = ?";
+        $query = "SELECT Nome, Cognome, Email, TipoUtente, Newsletter FROM UTENTE WHERE NomeUtente = ?";
         $stmt = $conn->prepare($query);
         $stmt->bind_param("s", $user);
         $stmt->execute();
@@ -70,33 +69,33 @@
     <div class="wrapper-forms">
         <form action="./handler/userdata-handler/username_handler.php" method="POST" class="data-handler">
             <label for="username update">USERNAME</label>
-            <input type="text" name="username" placeholder="<?= $user ?>">
+            <input type="text" name="username" placeholder="<?= $user ?>" class="data-input">
             <button type="submit">MODIFICA</button>
         </form>
 
         <form action="./handler/userdata-handler/name_handler.php" method="POST" class="data-handler">
             <label for="username update">NOME</label>
-            <input type="text" name="nome" placeholder="<?= $row['Nome'] ?>">
+            <input type="text" name="nome" placeholder="<?= $row['Nome'] ?>" class="data-input">
             <button type="submit">MODIFICA</button>
         </form>
 
         <form action="./handler/userdata-handler/surname_handler.php" method="POST" class="data-handler">
             <label for="username update">COGNOME</label>
-            <input type="text" name="cognome" placeholder="<?= $row['Cognome'] ?>">
+            <input type="text" name="cognome" placeholder="<?= $row['Cognome'] ?>" class="data-input">
             <button type="submit">MODIFICA</button>
         </form>
 
         <form action="./handler/userdata-handler/mail_handler.php" method="POST" class="data-handler">
             <label for="username update">EMAIL</label>
-            <input type="text" name="mail" placeholder="<?= $row['Email'] ?>">
+            <input type="text" name="mail" placeholder="<?= $row['Email'] ?>" class="data-input">
             <button type="submit">MODIFICA</button>
         </form>
-        <form action="./handler/userdata-handler/mod-handler.php" class="data-handler" method="POST">
+
+        <form action="./handler/mod-handler.php" class="data-handler" method="POST">
             <label for="tipo utente">TIPO</label>
             <input type="text" name="tipo" placeholder="<?= $row['TipoUtente'] ?>" readonly>
 
             <?php
-            
                 $q = "SELECT * FROM PARTECIPAZIONE AS P, ARTISTA AS A WHERE P.Artista = A.IDArtista AND A.Nome = ? AND A.Cognome = ?";
                 $s = $conn->prepare($q);
                 $nome = $row['Nome'];
@@ -124,4 +123,4 @@
         </section>
     </section>
 
-</body>
+</body>

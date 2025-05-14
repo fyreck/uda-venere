@@ -8,6 +8,10 @@
     margin: 0px;
 }
 
+button.btn-nav > i{
+	color: var(--primary-dark);
+}
+
 :root {
     --primary-color: #CF6E0D;
     --secondary-color: #DFAB44;
@@ -18,6 +22,7 @@
 
 body {
     background-color: var(--primary-dark);
+    height: 100%;
 }
 
 header {
@@ -28,9 +33,9 @@ header {
     z-index: 10;
 }
 
-.spacer {
-    height: 17vh; /* Spazio sotto l'header fisso */
-}
+/*.spacer {
+    height: 17vh;
+}*/
 
 h1 {
     font-family: "Ephesis", cursive;
@@ -72,7 +77,7 @@ h1 {
 }
 
 h1 a {
-	text-decoration: none;    
+	text-decoration: none;
 	font-family: "Ephesis", cursive;
     font-style: normal;
     text-align: center;
@@ -126,10 +131,10 @@ body {
 }
 
 .img-contenitore{
-    width: 300px;   
-    height: 150px;  
-    overflow: hidden; 
-    position: relative; 
+    width: 300px;
+    height: 150px;
+    overflow: hidden;
+    position: relative;
     margin-bottom: 1rem;
 }
 
@@ -206,7 +211,7 @@ header {
 }
 
 .button a {
-    display: inline-block;               /* essenziale per formare il “pulsante” */
+    display: inline-block;
     background-color: var(--secondary-color);
     text-decoration: none;
     color: black;
@@ -222,7 +227,7 @@ header {
 }
 
 /* CARDS */
-body {
+/*body {
     margin: 0;
     overflow-x: visible;
 }
@@ -278,28 +283,28 @@ body {
     font-weight: 800;
     text-transform: uppercase;
     margin-bottom: 1rem;
-}
+}*/
 
 /* NAVBAR */
 nav{
     position: fixed;
     left: 0;
-    top: 17%;
-    width: 65px;
-    height: 100%;
+    top: 0%;
+    width: 75px;
+    min-height: 100vh;
     background-color: var(--secondary-color);
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
-    padding-top: 8px;
+    padding-top: 20px;
     padding-bottom: 8px;
-    z-index: 8;
+    z-index: 11;
 }
 
 .btn-nav{
-    z-index: 10;
+    z-index: 11;
     background-color: transparent;
     border: transparent;
 }
@@ -309,24 +314,24 @@ nav{
     color: var(--primary-dark);
 }
 
-.btn-container, .btn-else{
+.btn-container{
     display: flex;
-    flex-direction: column; 
-    align-items: center; 
-    gap: 80px;
+    flex-direction: column;
+    align-items: center;
+    gap: 150px;
 }
 
 .focus {
-    width: 50px;
-    height: 50px;
-    display: inline-flex;               
+    width: 55px;
+    height: 55px;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
     border: 4px solid var(--primary-dark);
-    border-radius: 50%;                 
-    padding: 0;                         
-    margin: 0;    
-    z-index: 8;                      
+    border-radius: 50%;
+    padding: 0;
+    margin: 0;
+    z-index: 8;
 }
 
 .card-modal-overlay {
@@ -528,7 +533,7 @@ h2 {
 
 .input-field {
     position: relative;
-    border-bottom: 2px solid var(--primary-light);
+    /* Removed bottom border */
     margin: 15px 0;
 }
 
@@ -545,19 +550,27 @@ h2 {
 
 .input-field input {
     width: 100%;
-    height: 40px;
+    height: 60px; /* Increased height */
     background: transparent;
-    border: none;
+    border: 2px solid var(--primary-light); /* Added border */
+    border-radius: 5px; /* Added border radius */
     outline: none;
-    font-size: 16px;
+    font-size: 20px; /* Increased font size */
     color: var(--primary-light);
+    padding: 10px; /* Added padding */
+    transition: border-color 0.3s ease;
+}
+
+.input-field input:focus {
+    border-color: var(--secondary-color); /* Highlight border on focus */
 }
 
 .input-field input:focus~label, .input-field input:valid~label {
     font-size: 0.8rem;
     top: 10px;
     transform: translateY(-120%);
-}   
+    color: var(--secondary-color); /* Change label color on focus/valid */
+}
 
 .wrapper a {
     color: var(--primary-light);
@@ -582,9 +595,9 @@ button {
 }
 
 button:hover {
-    color: var(--primary-light);
+    color: var(--primary-dark);
     border-color: var(--primary-light);
-    background: rgba(255, 255, 255, 0.15);
+    background: var(--primary-color);
 }
 
 label {
@@ -610,16 +623,16 @@ h3 {
     margin-top: 20px;
 }
 
-.card-passate::before, .card-in-attesa::before{
+.card-passate::after, .card-in-attesa::after{
     content: "";
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(24, 24, 33, 0.5); 
+    background-color: rgba(24, 24, 33, 0.5);
     pointer-events: none;
-} 
+}
 
 .wrapper-forms{
     display: flex;
@@ -629,11 +642,15 @@ h3 {
 
 .data-handler{
     /* margin-top: 2rem; */
-    max-width: 20%;
+    max-width: 50%;
     margin: auto;
     display: flex;
     flex-direction: row;
     align-content: space-evenly;
+}
+
+.data-handler>form>button{
+	width: 100%;
 }
 
 .buttons{
@@ -660,11 +677,6 @@ h3 {
     flex-direction: column;
 }
 
-.gestione-eventi{
-    display: flex;
-    flex-direction: row;
-    max-width: 30%;
-    margin: auto;
-    align-items: center;
-    justify-content: space-evenly;
+h3>span{
+	color: var(--secondary-color) !important;
 }

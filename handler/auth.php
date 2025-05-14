@@ -3,6 +3,7 @@
     
     $loggato = false;
     $mod = false;
+    $owner = false;
 
     if(isset($_SESSION['user'])){
         $auth = $_SESSION['user'];
@@ -32,6 +33,12 @@
             $mod = true;
         }else{
             $mod = false;
+            if($tipo === 'OWNER'){
+            	$owner = true;
+                $mod = true;
+            }else{
+            	$owner = false;
+            }
         }
 
         $query = "SELECT Nome, Cognome FROM UTENTE WHERE NomeUtente = ?";
@@ -42,5 +49,24 @@
         $row = $result->fetch_assoc();
         $nomeUtente = $row['Nome'];
         $cognomeUtente = $row['Cognome'];
+
+        if($row['Newsletter']=='SI'){
+          $iscritto = true;
+        }
+        else{
+          $iscritto = false;
+        }
+        
+        $timeout=180;
+        
+        if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY']) > $timeout) {
+            unset($_SESSION['user']);
+            unset($_SESSION['LAST_ACTIVITY']);
+            header("Location: ../login.php");
+            exit;
+        } else {
+            $_SESSION['LAST_ACTIVITY'] = time(); 
+        }
+        
     }
 ?>

@@ -1,15 +1,8 @@
 <?php
     $host = "localhost";
-    $user = "root";
-    $pw = "";
-    $db = "VENERE";
-
-    /*
-    $host = "localhost";
     $user = "udavenere";
     $pw = "";
     $db = "my_udavenere";
-    */
 
     $conn = new mysqli($host, $user, $pw, $db);
 

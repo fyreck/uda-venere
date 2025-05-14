@@ -13,10 +13,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UDA Venere</title>
+    <title>Eventi Personali</title>
     <link rel="stylesheet" href="./src/plainstyle.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-    <link rel="icon" href="./images/favicon.png" type="image/x-icon">
+	<link rel="icon" href="./images/favicon.png" type="image/x-icon">
 
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -37,28 +37,26 @@
 
     <nav style="display: <?= $loggato ? 'block' : 'none' ?> ">
         <div class="btn-container">
-            <button class="btn-nav btn-dash">
-                <a href="./dashboard.php">
-                    <i class="fa-solid fa-list-ul fa-2xl"></i>
-                </a>
-            </button>
-            <div class="btn-else">
-                <button class="btn-nav btn-tickets focus">
-                    <a href="./eventi_personali.php">
-                        <i class="fa-solid fa-ticket fa-2xl"></i>
+            <a href="./dashboard.php" class="btn-nav">
+                	<button class="btn-nav btn-dash">
+                        <i class="fa-solid fa-list-ul fa-2xl"></i>
+                	</button>
+              	</a>
+                	<a href="./eventi_personali.php" class="btn-nav">
+                    	<button class="btn-nav btn-tickets focus">
+                            <i class="fa-solid fa-ticket fa-2xl"></i>
+                        </button>
                     </a>
-                </button>
-                <button class="btn-nav btn-personal">
-                    <a href="./area_personale.php">
-                        <i class="fa-solid fa-user fa-2xl"></i>
-                    </a>
-                </button>
-                <button class="btn-nav btn-users" style="display: <?= $mod ? 'block' : 'none' ?>;">
-                    <a href="./gestione.php">
-                        <i class="fa-solid fa-gear fa-2xl"></i>
-                    </a>
-                </button>
-            </div>
+                    <a href="./area_personale.php" class="btn-nav">
+                    	<button class="btn-nav btn-personal">
+                            <i class="fa-solid fa-user fa-2xl"></i>
+                        </button>
+                  	</a>
+                    <a href="./gestione.php" class="btn-nav">
+                    	<button class="btn-nav btn-users" style="display: <?= $owner ? 'block' : 'none' ?>;">    
+                            <i class="fa-solid fa-gear fa-2xl"></i>
+                        </button> 
+                   	</a>
         </div>
     </nav>
 
@@ -73,14 +71,12 @@
                 <div class="cards-wrapper" style="margin-left: <?= $loggato ? '64px' : '0px' ?>">
                     <div class="cards">
                         <?php
-                            $sql = "SELECT E.IDEvento, E.Titolo, E.DataEvento, E.OraEvento, E.Luogo, C.Nome as 'NomeCategoria', E.Descrizione, E.Immagine, E.Prezzo, E.NumeroPosti, A.Nome, A.Cognome FROM EVENTO as E, ARTISTA as A, CATEGORIAINTERESSE as C, PARTECIPAZIONE as P, UTENTE as U, PRENOTAZIONE as PR WHERE E.IDEvento = P.Evento AND A.IDArtista = P.Artista AND C.IDCategoria = E.Categoria AND U.NomeUtente = ? AND E.IDEvento = PR.Evento AND E.DataEvento > ? AND E.Stato = ? GROUP BY E.IDEvento";
+                            $sql = "SELECT E.IDEvento, E.Titolo, E.DataEvento, E.OraEvento, E.Luogo, C.Nome as 'NomeCategoria', E.Descrizione, E.Immagine, E.Prezzo, E.NumeroPosti, A.Nome, A.Cognome FROM EVENTO as E, ARTISTA as A, CATEGORIAINTERESSE as C, PARTECIPAZIONE as P, UTENTE as U, PRENOTAZIONE as PR WHERE E.IDEvento = P.Evento AND A.IDArtista = P.Artista AND C.IDCategoria = E.Categoria AND PR.Utente = ? AND E.IDEvento = PR.Evento AND E.DataEvento > ? GROUP BY E.IDEvento";
 
                             $oggi = date('Y-m-d');
-                            
-                            $stato = "ACCETTATO";
 
                             $stmt = $conn->prepare($sql);
-                            $stmt->bind_param("sss", $user, $oggi, $stato);
+                            $stmt->bind_param("ss", $user, $oggi);
                             $stmt->execute();
                             $result = $stmt->get_result();
 
@@ -111,7 +107,7 @@
                                 <div class="riga">
                                     <i class="fa-solid fa-clock fa-lg"></i><span><?= $data_ora ?></span><br>
                                 </div>
-                                    <div class="riga">
+                                <div class="riga">
                                     <i class="fa-solid fa-ticket fa-lg"></i><span><?= $row['NumeroPosti'] ?></span><br>
                                 </div>
                                 <div class="riga">
@@ -217,13 +213,12 @@
                 <div class="cards-wrapper" style="margin-left: <?= $loggato ? '64px' : '0px' ?>">
                     <div class="cards">
                         <?php
-                            $sql = "SELECT E.IDEvento, E.Titolo, E.DataEvento, E.OraEvento, E.Luogo, C.Nome as 'NomeCategoria', E.Descrizione, E.Immagine, E.Prezzo, E.NumeroPosti, A.Nome, A.Cognome FROM EVENTO as E, ARTISTA as A, CATEGORIAINTERESSE as C, PARTECIPAZIONE as P, UTENTE as U, PRENOTAZIONE as PR WHERE E.IDEvento = P.Evento AND A.IDArtista = P.Artista AND C.IDCategoria = E.Categoria AND U.NomeUtente = ? AND E.IDEvento = PR.Evento AND E.DataEvento < ? AND E.Stato = ? GROUP BY E.IDEvento";
+                            $sql = "SELECT E.IDEvento, E.Titolo, E.DataEvento, E.OraEvento, E.Luogo, C.Nome as 'NomeCategoria', E.Descrizione, E.Immagine, E.Immagine, E.Prezzo, E.NumeroPosti, A.Nome, A.Cognome FROM EVENTO as E, ARTISTA as A, CATEGORIAINTERESSE as C, PARTECIPAZIONE as P, UTENTE as U, PRENOTAZIONE as PR WHERE E.IDEvento = P.Evento AND A.IDArtista = P.Artista AND C.IDCategoria = E.Categoria AND U.NomeUtente = ? AND E.IDEvento = PR.Evento AND E.DataEvento < ? GROUP BY E.IDEvento";
 
                             $oggi = date('Y-m-d');
-                            $stato = "ACCETTATO";
 
                             $stmt = $conn->prepare($sql);
-                            $stmt->bind_param("sss", $user, $oggi, $stato);
+                            $stmt->bind_param("ss", $user, $oggi);
                             $stmt->execute();
                             $result = $stmt->get_result();
 
@@ -426,7 +421,7 @@
                                 $IDArtista=$proxArtista;
                             }
 
-                            $sql = "SELECT E.IDEvento, E.Titolo, E.DataEvento, E.OraEvento, E.Luogo, C.Nome as 'NomeCategoria', E.Descrizione, E.Immagine, E.Prezzo, E.NumeroPosti FROM EVENTO as E, PARTECIPAZIONE as P, CATEGORIAINTERESSE as C WHERE E.Categoria = C.IDCategoria AND E.IDEvento = P.Evento AND P.Artista = ? AND STATO = ?";
+                            $sql = "SELECT E.IDEvento, E.Titolo, E.DataEvento, E.OraEvento, E.Luogo, C.Nome as 'NomeCategoria', E.Descrizione, E.Immagine, E.Immagine, E.Prezzo, E.NumeroPosti FROM EVENTO as E, PARTECIPAZIONE as P, CATEGORIAINTERESSE as C WHERE E.Categoria = C.IDCategoria AND E.IDEvento = P.Evento AND P.Artista = ? AND STATO = ?";
                             
                             $stato = 'ACCETTATO';
                             
@@ -579,7 +574,7 @@
                             $IDArtista = $rowIDArtista['IDArtista'];
 
 
-                            $sql = "SELECT E.IDEvento, E.Titolo, E.DataEvento, E.OraEvento, E.Luogo, C.Nome as 'NomeCategoria', E.Descrizione, E.Immagine, E.Prezzo, E.NumeroPosti FROM EVENTO as E, PARTECIPAZIONE as P, CATEGORIAINTERESSE as C WHERE E.Categoria = C.IDCategoria AND E.IDEvento = P.Evento AND P.Artista = ? AND STATO = ?";
+                            $sql = "SELECT E.IDEvento, E.Titolo, E.DataEvento, E.OraEvento, E.Luogo, C.Nome as 'NomeCategoria', E.Descrizione, E.Immagine, E.Immagine, E.Prezzo, E.NumeroPosti FROM EVENTO as E, PARTECIPAZIONE as P, CATEGORIAINTERESSE as C WHERE E.Categoria = C.IDCategoria AND E.IDEvento = P.Evento AND P.Artista = ? AND STATO = ?";
                             
                             $stato = 'IN ATTESA';
                             
@@ -723,7 +718,7 @@
                 <div class="cards-wrapper" style="margin-left: <?= $loggato ? '64px' : '0px' ?>">
                     <div class="cards">
                         <?php
-                            $sql = "SELECT E.IDEvento, E.Titolo, E.DataEvento, E.OraEvento, E.Luogo, C.Nome as 'NomeCategoria', E.Descrizione, E.Immagine, E.Prezzo, E.NumeroPosti, A.Nome, A.Cognome FROM EVENTO as E, PARTECIPAZIONE as P, CATEGORIAINTERESSE as C, ARTISTA as A WHERE E.Categoria = C.IDCategoria AND E.IDEvento = P.Evento AND A.IDArtista = P.Artista AND E.Stato = ? ORDER BY 1";
+                            $sql = "SELECT E.IDEvento, E.Titolo, E.DataEvento, E.OraEvento, E.Luogo, C.Nome as 'NomeCategoria', E.Descrizione, E.Immagine, E.Immagine, E.Prezzo, E.NumeroPosti, A.Nome, A.Cognome FROM EVENTO as E, PARTECIPAZIONE as P, CATEGORIAINTERESSE as C, ARTISTA as A WHERE E.Categoria = C.IDCategoria AND E.IDEvento = P.Evento AND A.IDArtista = P.Artista AND E.Stato = ? ORDER BY 1";
 
                             $stato = 'IN ATTESA';
 
@@ -852,6 +847,10 @@
                                             <input type="hidden" name="evento" value="<?= $row['IDEvento'] ?>">
                                             <button type="submit" class="btn-accetazione">ACCETTA</button>
                                         </form>
+                                        <form action="./handler/scarto-handler.php" method="POST">
+                                            <input type="hidden" name="evento" value="<?= $row['IDEvento'] ?>">
+                                            <button type="submit" class="btn-accetazione">SCARTA</button>
+                                        </form>
                                     </div>
                                 </div>
                             </div>
@@ -869,13 +868,12 @@
     <script src="./src/cards.js"></script>
 
     <script>
-        function openCardMod(eventId) {
-          document.getElementById('modal-mod-' + eventId).style.display = 'flex';
+    	function openCardMod(eventId) {
+            document.getElementById('modal-mod-' + eventId).style.display = 'flex';
         }
         function closeCardMod(eventId) {
-          document.getElementById('modal-mod-' + eventId).style.display = 'none';
-    	}
-
+            document.getElementById('modal-mod-' + eventId).style.display = 'none';
+        }
 
         function showComments(){
             document.getElementById('form-comm').style.display="block";

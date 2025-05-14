@@ -14,7 +14,7 @@ ctx.shadowBlur = 100;
 ctx.shadowColor = "white";
 
 let stars = []; // Array per memorizzare le stelle
-let maxStars = 1000; // Numero massimo di stelle
+let maxStars = 100; // Numero massimo di stelle
 
 function createStar() {
 	let x = W * Math.random();
@@ -43,7 +43,7 @@ function animate() {
 
 	stars.forEach(drawStar);
 
-	setTimeout(animate, 100);
+	setTimeout(animate, 1000);
 }
 
 animate();

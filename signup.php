@@ -4,9 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UDA Venere</title>
-    <link rel="icon" href="./images/favicon.png" type="image/x-icon">
-
+    <title>Registrati</title>
+    <!-- <link rel="stylesheet" href="./src/style.css"> -->
+	<link rel="icon" href="./images/favicon.png" type="image/x-icon">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="./src/authstyle.css">
@@ -14,8 +14,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div  class="wrappersign">
-        <h2>SIGN UP</h2>
+    <div  class="wrapper">
+      	<p style="background-color: #D81E5B; color: #D9D9D9"><?= $_SESSION['error'] ?></p>
+        <p style="color: #D81E5B; background-color: #D9D9D9"><?= $_SESSION['success'] ?></p>
+        <h2>Signup</h2>
         <label>Registrati per godere di tutti i servizi</label>
 
         <!-- FORM UNO -->
@@ -41,16 +43,16 @@
                 <label for="password">Inserire la propria password</label>
             </div>
             <div class="input-field">
-                <input type="checkbox" name="newsletter" value="SI">
+                <input type="checkbox" name="newsletter">
                 <label for="newsletter">Vuoi partecipare alla newsletter?</label>
             </div>
-
             <button type="submit" id="btn-next">CONTINUA</button>
 
             <div class="register">
                 <p>Hai un account? <a href="./login.php" style="text-decoration: none; color: #D9D9D9">Accedi</a></p>
             </div>
         </form>
+        <!-- FORM DUE -->
         <form id="form-due" action="handler/signup_handler.php" method="POST" style="display: none;">
             <?php
                 require "./handler/conn.php";
@@ -60,7 +62,7 @@
                 
                 if ($result){
                     while ($row = $result->fetch_assoc()): ?>
-                        <input type="checkbox" name="categorie[]" value="<?= $row['Nome'] ?>">
+                        <input type="checkbox" name="categorie[]" value="<?= $row['IDCategoria'] ?>">
                         <label><?= $row['Nome'] ?></label><br><br>
                     <?php endwhile;
                 }
@@ -71,7 +73,7 @@
             <input type="hidden" name="cognome">
             <input type="hidden" name="mail">
             <input type="hidden" name="pw">
-            <input type="hidden" name="newsletter" value="SI">
+			<input type="hidden" name="newsletter">			
 
             <button type="submit">REGISTRATI</button>
         </form>
@@ -89,7 +91,8 @@
             formDue.cognome.value = formUno.cognome.value;
             formDue.mail.value = formUno.mail.value;
             formDue.pw.value = formUno.pw.value;
-            formDue.newsletter.value = formUno.newsletter.value;
+			formDue.newsletter.value = formUno.newsletter.value;
+
 
             document.getElementById("form-uno").style.display = "none";
             document.getElementById("form-due").style.display = "block";
@@ -103,4 +106,4 @@
         }
     ?>
 
-</body>
+</body>

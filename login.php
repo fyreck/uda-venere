@@ -21,7 +21,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 </head>
 <body>
+
+  <!--<header>
+      <h1><a href="./index.html">VenUS</a></h1>
+  </header> -->
     <div class="wrapper">
+      	<p style="background-color: #D81E5B; color: #D9D9D9"><?= $_SESSION['error'] ?></p>
+        <p style="color: #D81E5B; background-color: #D9D9D9"><?= $_SESSION['success'] ?></p>
         <form action="./handler/login_handler.php" method="POST">
             <h2>Login</h2>
             <div class="input-field">
@@ -51,4 +57,4 @@
     <!-- <script src="./src/main.js"></script> -->
     <!-- <script src="./src/stars.js"></script> -->
 </body>
-</html>
+</html>

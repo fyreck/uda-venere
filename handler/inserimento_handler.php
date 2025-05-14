@@ -7,9 +7,6 @@
         $luogo = htmlentities($_POST['luogo']);
         $data = htmlentities($_POST['data']);
         $ora = htmlentities(($_POST['ora']));
-        $posti = htmlentities($_POST['posti']);
-        $prezzo = htmlentities($_POST['prezzo']);
-
         $categoria = htmlentities($_POST['categoria']);
 
         // echo $categoria; //output di debug
@@ -56,9 +53,9 @@
                 if (move_uploaded_file($_FILES["immagine"]["tmp_name"], "../" . $percorsoImg)) {
                     
 
-                    $queryInserimento = "INSERT INTO EVENTO (IDevento, Titolo, DataEvento, OraEvento, Luogo, Categoria, Descrizione, Immagine, Stato, Prezzo, NumeroPosti) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
+                    $queryInserimento = "INSERT INTO EVENTO (IDevento, Titolo, DataEvento, OraEvento, Luogo, Categoria, Descrizione, Immagine, Stato) VALUES (?,?,?,?,?,?,?,?,?)";
                     $stmtInserimento = $conn->prepare($queryInserimento);
-                    $stmtInserimento->bind_param("issssisssii", $proxEvento,  $titolo, $data, $ora, $luogo, $IDCategoria, $descrizione, $percorsoImg, $stato, $prezzo, $posti);
+                    $stmtInserimento->bind_param("issssisss", $proxEvento,  $titolo, $data, $ora, $luogo, $IDCategoria, $descrizione, $percorsoImg, $stato);
 
                     if($stmtInserimento->execute()===TRUE){
 
@@ -123,4 +120,4 @@
             }
         }
     }
-?>
+?>
