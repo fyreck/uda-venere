@@ -81,7 +81,9 @@ for (let i = 1; i <= imageCount; i++) {
 }
 ```
 Questo ciclo carica in un array tutti i percorsi delle varie immagini
-```
+
+
+```javascript
 const scrollY = window.scrollY;
 const scrollHeight = document.body.scrollHeight - window.innerHeight;
 const scrollPercentage = scrollY / scrollHeight;
@@ -94,7 +96,9 @@ const translateValue = calcolaTraslazione(imageIndex);
 document.getElementById("planet-frame").style.transform = `translateX(${translateValue}%)`;
 ```
 Con queste variabili, andiamo a calcolare ogni quante "scrollate" con la rotellina dovremmo aggiornare l'immagine per garantire una transizione fluida ed omogenea.
-```
+
+
+```javascript
 let primoDiv = document.getElementById("primo");
 if (scrollY >= 800 && scrollY < 1600) {
     primoDiv.classList.add("visible");
@@ -117,8 +121,7 @@ if (scrollY >= 2800) {
 }
 ```
 In base a quanto in fondo siamo nella pagina, capiamo quando dobbiamo mostrare e non i vari DIV
-```
----
+
 ## 📧 La Newsletter
 ```php
 require "./conn.php";
