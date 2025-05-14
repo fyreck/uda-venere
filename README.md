@@ -246,91 +246,18 @@ Di seguito si ha la struttura che andrà ad assumere la newsletter che viene ins
         <h1>Ciao [NOME] [COGNOME]!</h1>       </div>
       <div class="content">
         <p>Grandi notizie! Abbiamo nuovi eventi pronti per te.</p>
-```
-```php
-        <?php
-          $q = "SELECT u.Nome, u.Cognome, u.Email, e.Titolo, e.Descrizione, e.DataEvento, e.OraEvento, e.Luogo
-                FROM UTENTE u
-                JOIN PREFERENZA p ON u.NomeUtente = p.Utente
-                JOIN CATEGORIAINTERESSE c ON p.Categoria = c.IDCategoria
-                JOIN EVENTO e ON e.Categoria = c.IDCategoria
-                WHERE
-                  u.Newsletter = 'SI'
-                  AND YEARWEEK(e.DataEvento, 1) = YEARWEEK(CURDATE(), 1)";
-
-          $result = $conn->query;
-
-          if ($result->num_rows > 0) {
-              while ($row = $result->fetch_assoc()):
-                  $data = $row['DataEvento'];
-                  $ora = $row['OraEvento'];
-
-                  $dataFormattata = date('d/m/Y', strtotime($data));
-                  $oraFormattata = date('H:i', strtotime($ora));
-
-                  $data_ora = $dataFormattata . ", " . $oraFormattata;
-        ?>
-```
-```html
-          <div class="card" id="<?= $row['IDEvento'] ?>" onclick="openCard(<?= $row['IDEvento'] ?>)">
-              <h2 class="card-title"><?= $row['Titolo'] ?></h2>
-              <div class="img-contenitore">
-                  <img src="<?= $row['Immagine'] ?>" alt="immagine" class="card-image">
-              </div>
-              <div class="card-info">
-                  <div class="riga">
-                      <i class="fa-solid fa-user fa-lg"></i><span><?= $row['Nome'] ?> <?= $row['Cognome'] ?></span><br>
-                  </div>
-                  <div class="riga">
-                      <i class="fa-solid fa-location-dot fa-lg"></i><span><?= $row['Luogo'] ?></span><br>
-                  </div>
-                  <div class="riga">
-                      <i class="fa-solid fa-clock fa-lg"></i><span><?= $data_ora ?></span><br>
-                  </div>
-                  <div class="riga" style="display: <?= $loggato ? "block" : "none" ?>">
-                      <i class="fa-solid fa-ticket fa-lg"></i><span><?= $row['NumeroPosti'] ?></span><br>
-                  </div>
-                  <div class="riga" style="display: <?= $loggato ? "block" : "none" ?>">
-                      <i class="fa-solid fa-money-bill fa-lg"></i>
-                      <span><?php if($row['Prezzo']==0){ echo "gratuito"; }else{ echo "€ " . $row['Prezzo'];} ?>
-                      </span><br>
-                  </div>
-                  <div class="riga">
-                      <i class="fa-solid fa-align-left fa-lg"></i><span><?= $row['Descrizione'] ?></span><br>
-                  </div>
-                  <br><span class="riga-categoria"><?= $row['NomeCategoria'] ?></span>
-                  <section class="commenti" style="display: none;">
-                      <?php
-                          $sql_com = "SELECT Utente, Voto, Descrizione FROM COMMENTO WHERE Evento = ?";
-                          $stmt_com = $conn->prepare($sql_com);
-                          $stmt_com->bind_param('i', $row['IDEvento']);
-                          $stmt_com->execute();
-                          $result_com = $stmt_com->get_result();
-
-                          if ($result_com->num_rows > 0) {
-                              while ($row_com = $result_com->fetch_assoc()): ?>
-                                  <div class="commento">
-                                      <span class="user"><?= $row_com['Utente'] ?></span>
-                                      <p class="voto"><strong><?= $row_com['Voto'] ?></strong>/5</p>
-                                      <p class="descrizione"><?= $row_com['Descrizione'] ?></p>
-                                  </div>
-                              <?php endwhile;
-                          } else { ?>
-                              <span>NESSUN COMMENTO</span>
-                          <?php }
-                      ?>
-                  </section>
-              </div>
-          </div>
+        
         <p>
-          Avventurati nei nostri eventi e divertiti! Non perdere l'occasione, i
-          posti si stanno esaurendo.
+          Lasciati ispirare da questi titoli e divertiti!
         </p>
+        <ul>
+        	[LISTA_EVENTI]
+        </ul>
         <p><a href="../dashboard.php" class="button">Prenota Ora!</a></p>
         <hr />
       </div>
       <div class="footer">
-        <p>VenUS&copy; " . date("Y") . "</p>
+        <p>VenUS&copy; [ANNO]</p>
       </div>
     </div>
   </body>
@@ -393,4 +320,116 @@ move_uploaded_file($_FILES["immagine"]["tmp_name"], "../" . $percorsoImg);
 In questo modo è possibile spostare l'immagine, ora rinominata in modo che si relazioni con l'evento a cui appartiene, all'interno di una cartella dedicata e non più sezione in cui è stata caricata, in modo da avere sempre sotto mano le foto caricate.
 
 ---
+## 💤 Inattività
+```php
+$timeout=180;
+        
+if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY']) > $timeout) {
+    unset($_SESSION['user']);
+    unset($_SESSION['LAST_ACTIVITY']);
+    header("Location: ../login.php");
+    exit;
+} else {
+    $_SESSION['LAST_ACTIVITY'] = time(); 
+}
+```
+Viene verificata in ogni pagina l'ultima attività dell'utente e se questa risale a più di 3 minuti prima viene richiesto il login. ```time() - $_SESSION['LAST_ACTIVITY']) > $timeout``` fa la differenza tra il momento in cui sta venendo eseguito il controllo e l'ora dell'ultima attività.
 
+---
+## ☯️ Login con Username e/o Email
+Per comodità è stata sviluppata questa funzionalità, permettendo agli utenti di scegliere se fare l'accesso con il loro username o con la loro email. Seppur solo ```NomeUtente``` è chiave, l'attibuto ```Email``` è stato impostato come ```UNIQUE``` per permettere questa funzionalità.
+```php
+$mail_user = htmlentities(trim($_POST["mail_user"]));
+
+if (filter_var($mail_user, FILTER_VALIDATE_EMAIL)) {
+    $query = "SELECT * FROM UTENTE WHERE EMAIL = ?";
+} else {
+    $query = "SELECT * FROM UTENTE WHERE NOMEUTENTE = ?";
+}
+```
+La funzione ```filter_var()``` con attributo ```FILTER_VALIDATE_EMAIL``` di ```PHP``` permette di capire il se il parametro rispetta le caratteristiche di una email o meno. In base al risultato della funzione viene creata una query diversa che permette l'autenticazione corretta dell'utente.
+
+---
+## ♊ Due Form in Una
+Nella stessa pagina di Sign-up sono presenti due form differenti visibili una alla volta per condurre l'utente passo dopo passo alla sua registrazione.
+```html
+<!-- FORM UNO -->
+<form id="form-uno">
+    <div class="input-field">
+        <input type="text" placeholder="..." name="username" required>
+        <label for="username">Scegliere un proprio username</label>
+    </div>
+    <div class="input-field">
+        <input type="text" name="nome" placeholder="..." required>
+        <label for="nome_cognome">Inserire nome </label>
+    </div>
+    <div class="input-field">
+        <input type="text" name="cognome" placeholder="..." required>
+        <label for="nome_cognome">Inserire cognome </label>
+    </div>
+    <div class="input-field">    
+        <input type="email" name="mail" placeholder="..." required>
+        <label for="mail">Inserire la propria email</label>
+    </div>
+    <div class="input-field">
+        <input type="password" name="pw" placeholder="..." required>
+        <label for="password">Inserire la propria password</label>
+    </div>
+    <div class="input-field">
+        <input type="checkbox" name="newsletter">
+        <label for="newsletter">Vuoi partecipare alla newsletter?</label>
+    </div>
+    <button type="submit" id="btn-next">CONTINUA</button>
+
+    <div class="register">
+        <p>Hai un account? <a href="./login.php" style="text-decoration: none; color: #D9D9D9">Accedi</a></p>
+    </div>
+</form>
+
+<!-- FORM DUE -->
+<form id="form-due" action="handler/signup_handler.php" method="POST" style="display: none;">
+    <?php
+        require "./handler/conn.php";
+        
+        $query = "SELECT * FROM CATEGORIAINTERESSE";
+        $result = $conn->query($query);
+        
+        if ($result){
+            while ($row = $result->fetch_assoc()): ?>
+                <input type="checkbox" name="categorie[]" value="<?= $row['Nome'] ?>">
+                <label><?= $row['Nome'] ?></label><br><br>
+            <?php endwhile;
+        }
+    ?>
+
+    <input type="hidden" name="username">
+    <input type="hidden" name="nome">
+    <input type="hidden" name="cognome">
+    <input type="hidden" name="mail">
+    <input type="hidden" name="pw">
+<input type="hidden" name="newsletter">			
+
+    <button type="submit">REGISTRATI</button>
+</form>
+```
+La prima form è statica e recupera i dati anagrafici dell'utente. La seconda è popolata dinamicamente con le categoria presenti in database. 
+Per non perdere i dati caricati nella prima form, questi vengono manipolati con ```JavaScript``` e vengono impostati come ```value``` negli ```input``` con ```type='hidden'``` della seconda form.
+```javascript
+document.getElementById("form-uno").addEventListener("submit", function(e) {
+  e.preventDefault();
+
+  const formUno = document.forms["form-uno"];
+  const formDue = document.forms["form-due"];
+
+  formDue.username.value = formUno.username.value;
+  formDue.nome.value = formUno.nome.value;
+  formDue.cognome.value = formUno.cognome.value;
+  formDue.mail.value = formUno.mail.value;
+  formDue.pw.value = formUno.pw.value;
+  formDue.newsletter.value = formUno.newsletter.value;
+
+
+  document.getElementById("form-uno").style.display = "none";
+  document.getElementById("form-due").style.display = "block";
+});
+```
