@@ -22,7 +22,7 @@ Abbiamo cercato di non creare il solito sito statico, includendo alcune funziona
 
 Ecco un riepilogo delle tecnologie che abbiamo studiato e applicato per questo progetto:
 
-* **Frontend:** `HTML5`, `CSS3`, `JavaScript` (con particolare attenzione a librerie/framework per la grafica 3D).
+* **Frontend:** `HTML5`, `CSS3`, `JavaScript`.
 * **Backend:** `PHP` (gestione dati, invio email).
 * **Automazione:** `Cron Job` (task scheduling sul server).
 * **Hosting:** Altervista.
@@ -33,7 +33,7 @@ Ecco un riepilogo delle tecnologie che abbiamo studiato e applicato per questo p
 
 Questo progetto è stato un banco di prova fantastico per imparare a lavorare in team usando **GitHub**. La nostra repository ([`https://github.com/fyreck/uda-venere`](https://github.com/fyreck/uda-venere)) è stata il cuore pulsante della nostra collaborazione.
 
-Abbiamo sfruttato appieno il **controllo versione**: ogni modifica significativa è un **commit**, con un messaggio chiaro che spiega cosa è stato fatto. Per lavorare su funzionalità separate senza intralciarci, abbiamo utilizzato i **branch**. Ognuno poteva sviluppare la sua parte (es. la newsletter, la grafica 3D, una pagina specifica) sul proprio branch, per poi integrare il tutto nel branch principale (`main` o `master`) con un **merge** (spesso preceduto da una **Pull Request** - anche se per un piccolo team potremmo averle usate in modo snello). Questo approccio ci ha permesso di:
+Abbiamo sfruttato appieno il **controllo versione**: ogni modifica significativa è un **commit**, con un messaggio chiaro che spiega cosa è stato fatto. Per lavorare su funzionalità separate senza intralciarci, abbiamo utilizzato i **branch**. Ognuno poteva sviluppare la sua parte (es. la newsletter, una pagina specifica) sul proprio branch, per poi integrare il tutto nel branch principale (`main`) con un **merge** (spesso preceduto da una **Pull Request** - anche se per un piccolo team potremmo averle usate in modo snello). Questo approccio ci ha permesso di:
 
 * Dividere chiaramente i compiti.
 * Lavorare in parallelo.
@@ -74,86 +74,49 @@ La community dispone di 4 tipologie di utenti:
 * l'**utente assoluto** ovvero i fondatori di *VenUS*
 ## 🔄️ Il Pianeta Ruotante
 ```javascript
-  document.addEventListener("DOMContentLoaded", function() {
-      window.scrollTo({
-          top: 0,
-          left: 0,
-          behavior: 'smooth'
-      });
-  });
+const imageCount = 80;
+let images = [];
+for (let i = 1; i <= imageCount; i++) {
+    images.push(`frame/${i}.png`);
+}
+```
+Questo ciclo carica in un array tutti i percorsi delle varie immagini
+```
+const scrollY = window.scrollY;
+const scrollHeight = document.body.scrollHeight - window.innerHeight;
+const scrollPercentage = scrollY / scrollHeight;
+let imageIndex = Math.floor(scrollPercentage * (imageCount - 1));
+imageIndex = Math.max(0, Math.min(imageIndex, imageCount - 1));
+document.getElementById("planet-frame").src = images[imageIndex];
   
-  const imageCount = 80;
-  let images = [];
-  for (let i = 1; i <= imageCount; i++) {
-      images.push(`frame/${i}.png`);
-  }
-  
-  document.getElementById("planet-frame").style.transform = `translateX(-50%)`; // Imposta la posizione iniziale
-  
-  window.addEventListener("scroll", () => {
-      const scrollY = window.scrollY;
-      const scrollHeight = document.body.scrollHeight - window.innerHeight;
-      const scrollPercentage = scrollY / scrollHeight;
-      let imageIndex = Math.floor(scrollPercentage * (imageCount - 1));
-      imageIndex = Math.max(0, Math.min(imageIndex, imageCount - 1));
-      document.getElementById("planet-frame").src = images[imageIndex];
-  
-      // Calcola la traslazione usando la funzione calcolaTraslazione
-      const translateValue = calcolaTraslazione(imageIndex);
-      document.getElementById("planet-frame").style.transform = `translateX(${translateValue}%)`;
-  
-      // Gestione della visibilità dei div basata sullo scroll
-      let primoDiv = document.getElementById("primo");
-      if (scrollY >= 800 && scrollY < 1600) {
-          primoDiv.classList.add("visible");
-      } else {
-          primoDiv.classList.remove("visible");
-      }
-  
-      let secondoDiv = document.getElementById("secondo");
-      if (scrollY >= 1800 && scrollY < 2600) {
-          secondoDiv.classList.add("visible");
-      } else {
-          secondoDiv.classList.remove("visible");
-      }
-  
-      let terzoDiv = document.getElementById("terzo");
-      if (scrollY >= 2800) {
-          terzoDiv.classList.add("visible");
-      } else {
-          terzoDiv.classList.remove("visible");
-      }
-  });
-  
-  function calcolaTraslazione(slideIndex) {
-      let translateValue;
-  
-      if (slideIndex <= 0) {
-          translateValue = -50;
-      } else if (slideIndex >= imageCount - 1) {
-          translateValue = -90;
-      } else {
-          // Calcola una traslazione lineare tra -50 e -90
-          translateValue = -50 - ((slideIndex / (imageCount - 1)) * 40);
-      }
-  
-      return translateValue;
-  }
-  
-  function generaNumeroCasuale() {
-      // Genera un numero casuale tra 1 e 20 (inclusi).
-      const numeroCasuale = Math.floor(Math.random() * 20) + 1; //indica qua ogni quanto vuoi che esca VenUSaur
-  
-      const spanElement = document.getElementById("meme");
-  
-      if (numeroCasuale == 17) {
-          spanElement.style.display = "inline";
-      } else {
-          spanElement.style.display = "none"; // Assicurati che sia nascosto quando non è il numero fortunato
-      }
-  }
-  
-  generaNumeroCasuale();
+// Calcola la traslazione usando la funzione calcolaTraslazione
+const translateValue = calcolaTraslazione(imageIndex);
+document.getElementById("planet-frame").style.transform = `translateX(${translateValue}%)`;
+```
+Con queste variabili, andiamo a calcolare ogni quante "scrollate" con la rotellina dovremmo aggiornare l'immagine per garantire una transizione fluida ed omogenea.
+```
+let primoDiv = document.getElementById("primo");
+if (scrollY >= 800 && scrollY < 1600) {
+    primoDiv.classList.add("visible");
+} else {
+    primoDiv.classList.remove("visible");
+}
+
+let secondoDiv = document.getElementById("secondo");
+if (scrollY >= 1800 && scrollY < 2600) {
+    secondoDiv.classList.add("visible");
+} else {
+    secondoDiv.classList.remove("visible");
+}
+
+let terzoDiv = document.getElementById("terzo");
+if (scrollY >= 2800) {
+    terzoDiv.classList.add("visible");
+} else {
+    terzoDiv.classList.remove("visible");
+}
+```
+In base a quanto in fondo siamo nella pagina, capiamo quando dobbiamo mostrare e non i vari DIV
 ```
 ---
 ## 📧 La Newsletter
@@ -171,10 +134,9 @@ $q = "SELECT u.Nome, u.Cognome, u.Email, e.Titolo, e.Descrizione, e.DataEvento, 
         AND YEARWEEK(e.DataEvento, 1) = YEARWEEK(CURDATE(), 1)";
 
 if ($result->num_rows > 0) {
-// Definisci il soggetto dell'email
+
 $subject = "Scopri nuovi i eventi che pensiamo possano entusiasmarti!";
 
-// Inizia la struttura HTML dell'email (usa HEREDOC per maggiore leggibilità)
 $html_template = <<<EOT
 ```
 Vengono selezionati i dati necessari per la newsletter.
@@ -187,59 +149,6 @@ Per ottenere gli eventi della settimana è stata usata la funzione di ```MYSQL Y
 
 Di seguito si ha la struttura che andrà ad assumere la newsletter che viene inserita nella variabile ```$html_template```.
 ```html
-<html>
-  <head>
-    <title>$subject</title>
-    <style>
-        :root {
-            --primary-color: #CF6E0D; /* Arancione scuro */
-            --secondary-color: #DFAB44; /* Giallo-arancio */
-            --accent-color: #D81E5B; /* Rosa acceso */
-            --primary-light: #D9D9D9; /* Grigio chiaro */
-            --primary-dark: #181821; /* Quasi nero */
-        }
-
-      body {
-        font-family: Arial, sans-serif;
-        line-height: 1.6;
-        color: var(--primary-dark); /* Testo scuro */
-      }
-      .container {
-        width: 90%;
-        max-width: 600px;
-        margin: 20px auto;
-        padding: 20px;
-        border: 1px solid var(--primary-light); /* Bordo grigio chiaro */
-        border-radius: 5px;
-        background-color: var(--primary-light); /* Sfondo grigio chiaro */
-      }
-      .header {
-        background-color: var(--primary-color); /* Intestazione arancione scuro */
-        color: white;
-        padding: 10px;
-        text-align: center;
-        border-radius: 5px 5px 0 0;
-      }
-      .content {
-        padding: 20px;
-      }
-      .footer {
-        font-size: 0.9em;
-        text-align: center;
-        color: #777; /* Mantenuto grigio per il footer */
-        margin-top: 20px;
-      }
-      .button {
-        display: inline-block;
-        background-color: var(--accent-color); /* Bottone rosa acceso */
-        color: white;
-        padding: 10px 20px;
-        text-decoration: none;
-        border-radius: 5px;
-        margin-top: 15px;
-      }
-    </style>
-  </head>
   <body>
     <div class="container">
       <div class="header">
@@ -261,13 +170,9 @@ Di seguito si ha la struttura che andrà ad assumere la newsletter che viene ins
       </div>
     </div>
   </body>
-</html>
 ```
 ```php
 EOT;
-        // Fine HEREDOC
-
-        // Intestazioni per l'email HTML
         $headers = "MIME-Version: 1.0" . "\r\n";
         $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
         $headers .= "From: udavenere@altervista.org" . "\r\n"; 
@@ -295,7 +200,6 @@ EOT;
         echo "Nessun utente iscritto alla newsletter trovato.<br>";
     }
 
-    // Chiudi la connessione al database
     $conn->close();
 ```
 È stata usata la funzione ```mail``` di ```PHP``` per inviare la mail e la newsletter è stata automatizzata grazie ai ```cron job``` offerti da ```Altervista```.
